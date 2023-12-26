@@ -49,7 +49,7 @@ public class UserService {
         if(user == null) { // 존재하지 않는 회원일 경우
             return null;
         }
-        if(user.getPassword() != passwordEncoder.encode(emailLoginDto.getPassword())){
+        if(!passwordEncoder.matches(emailLoginDto.getPassword(), user.getPassword())){
             return null; // 비밀번호가 일치하지 않을 경우
         }
 
@@ -58,5 +58,4 @@ public class UserService {
 
         return jwtTokenProvider.createToken(user.getUsername(), roles);
     }
-
 }

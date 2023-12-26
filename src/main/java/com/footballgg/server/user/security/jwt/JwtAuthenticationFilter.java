@@ -22,20 +22,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("jwt Filter...");
-        String jwtToken = parseJwt(request);
+        String jwtToken = resolveToken(request);
         log.info("jwtToken = {}",jwtToken);
         if (jwtToken != null && jwtTokenProvider.validateToken(jwtToken)) {
             Authentication auth = jwtTokenProvider.getAuthentication(jwtToken);
             SecurityContextHolder.getContext().setAuthentication(auth);
+            log.info("auth={}",auth);
         }
         log.info("next Filter");
         filterChain.doFilter(request, response);
     }
 
-    private String parseJwt(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7, headerAuth.length());
+    // Request Header에서 토큰 정보 추출
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken)) {
+            return bearerToken;
         }
         return null;
     }

@@ -38,7 +38,7 @@ public class EmailRequestDto {
                 .email(email)
                 .nickname(nickname)
                 .password(password)
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .userType(UserType.EMAIL)
                 .build();
     }

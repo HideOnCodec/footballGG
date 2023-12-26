@@ -45,7 +45,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     private Role role;
 
     public void addUserAuthority() {
-        this.role = Role.USER;
+        this.role = Role.ROLE_USER;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder){
