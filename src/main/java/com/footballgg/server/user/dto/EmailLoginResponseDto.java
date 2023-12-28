@@ -1,13 +1,14 @@
-package com.footballgg.server.user.security.jwt;
+package com.footballgg.server.user.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
 @Builder
-public class JwtToken {
+public class EmailLoginResponseDto {
     private String accessToken;
     private String refreshToken;
 }

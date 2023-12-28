@@ -41,8 +41,14 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    private String refreshToken;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 
     public void addUserAuthority() {
         this.role = Role.ROLE_USER;

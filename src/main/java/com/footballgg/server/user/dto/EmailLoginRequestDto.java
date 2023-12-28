@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @ToString
 @NoArgsConstructor
-public class EmailLoginDto {
+public class EmailLoginRequestDto {
     @Email
     private String email;
     @NotNull

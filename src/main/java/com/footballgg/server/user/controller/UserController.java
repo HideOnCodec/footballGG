@@ -3,14 +3,15 @@ package com.footballgg.server.user.controller;
 import com.footballgg.server.base.baseresponse.BaseResponse;
 import com.footballgg.server.base.baseresponse.BaseResponseStatus;
 import com.footballgg.server.user.domain.User;
-import com.footballgg.server.user.dto.EmailLoginDto;
+import com.footballgg.server.user.dto.EmailLoginRequestDto;
+import com.footballgg.server.user.dto.EmailLoginResponseDto;
 import com.footballgg.server.user.dto.EmailRequestDto;
-import com.footballgg.server.user.repository.UserRepository;
 import com.footballgg.server.user.security.jwt.JwtToken;
+import com.footballgg.server.user.security.service.SecurityUtil;
 import com.footballgg.server.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,8 +22,7 @@ import javax.validation.Valid;
 @Slf4j
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
-
+    private final SecurityUtil securityUtil;
     /**
      * 이메일 회원가입
      * [POST] /user/join/email
@@ -43,14 +43,20 @@ public class UserController {
      * @Body emailLoginDto : email, password
      */
     @PostMapping("/login/email") // @Valid Dto에 정의된 lombok에 맞게 객체를 검증해줌.
-    public BaseResponse<JwtToken> loginByEmail(@Valid @RequestBody EmailLoginDto emailLoginDto){
-        JwtToken jwtToken = userService.emailLogin(emailLoginDto);
-        if(jwtToken == null){
+    public BaseResponse<EmailLoginResponseDto> loginByEmail(@Valid @RequestBody EmailLoginRequestDto emailLoginRequestDto){
+        EmailLoginResponseDto emailLoginResponseDto = userService.emailLogin(emailLoginRequestDto);
+        if(emailLoginResponseDto == null){
             return new BaseResponse<>(BaseResponseStatus.FAILED_NOT_FOUND_USER);
         }
-        log.info("request username = {}, password = {}", emailLoginDto.getEmail(), emailLoginDto.getPassword());
-        log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
-        return new BaseResponse<>(jwtToken,BaseResponseStatus.SUCCESS_EMAIL_LOGIN);
+        log.info("request username = {}, password = {}", emailLoginRequestDto.getEmail(), emailLoginRequestDto.getPassword());
+        log.info("jwtToken accessToken = {} refreshToken = {}", emailLoginResponseDto.getAccessToken(),emailLoginResponseDto.getRefreshToken());
+        return new BaseResponse<>(emailLoginResponseDto,BaseResponseStatus.SUCCESS_EMAIL_LOGIN);
+    }
+
+    //TODO : Access Token 이 만료가 되면 여기로 요청을 보냄
+    @PutMapping("/newAccess")
+    public BaseResponse<JwtToken> issueAccessToken(HttpServletRequest request) {
+        return new BaseResponse<>(userService.issueAccessToken(request),BaseResponseStatus.SUCCESS_REFRESH_TOKEN);
     }
 
     /**
@@ -60,6 +66,6 @@ public class UserController {
      */
     @PostMapping("/test")
     public String test() {
-        return "success";
+        return securityUtil.getLoginUsername();
     }
 }
