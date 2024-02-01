@@ -1,16 +1,18 @@
 package com.footballgg.server.user.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 
 @Getter
-@ToString
-@NoArgsConstructor
+@Setter
 public class EmailLoginRequestDto {
+
     @Email
+    @NotBlank(message = "이메일을 입력해주세요")
     private String email;
-    @NotNull
+
+    @NotBlank(message = "비밀번호를 입력해주세요")
     private String password;
 }

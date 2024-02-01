@@ -1,0 +1,40 @@
+.error-message{
+    color: red;
+    border-color: red;
+}
+.fieldError{
+    border-color: red;
+}
+h1{
+    text-align: center;
+}
+.join-body{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 500px;
+    margin : auto;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    gap:15px;
+    justify-content: center;
+}
+
+.logo{
+    width: 500px;
+    height: auto;
+}
+
+#email-auth{
+    display: flex;
+    flex-direction: row;
+    gap:15px;
+    margin-bottom: 5px;
+}
+
+#codeSendBtn{
+    margin-bottom:5px;
+}

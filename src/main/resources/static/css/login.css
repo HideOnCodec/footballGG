@@ -1,0 +1,28 @@
+.error-message{
+    color: red;
+    border-color: red;
+}
+.fieldError{
+    border-color: red;
+}
+h1{
+    text-align: center;
+}
+.login-body{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 500px;
+    margin : auto;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    gap:15px;
+    justify-content: center;
+}
+
+.logo{
+    margin-bottom: 40px;
+}

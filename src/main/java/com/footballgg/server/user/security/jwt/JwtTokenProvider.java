@@ -3,6 +3,7 @@ package com.footballgg.server.user.security.jwt;
 import com.footballgg.server.user.security.service.CustomUserDetailService;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;;
@@ -23,9 +24,8 @@ public class JwtTokenProvider  {
     @Value("${jwt.secret-key}")
     private String secretKey;
     private final CustomUserDetailService customUserDetailService;
-    private long ACCESS_TOKEN_VALID_TIME = 1000L * 60 * 60l; //1시간
-
-    private long REFRESH_TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 7l; //일주일
+    private final long ACCESS_TOKEN_VALID_TIME = 1000L * 60 * 60l; //1시간
+    private final long REFRESH_TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 7l; //일주일
     // User 정보를 가지고 AccessToken을 생성하는 메서드
     @PostConstruct
     protected void init() {
@@ -85,6 +85,21 @@ public class JwtTokenProvider  {
 
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
+
+        /*헤더에 값이 없다면 토큰 확인*/
+        if (bearerToken == null) {
+            Cookie[] cookies = request.getCookies(); // 모든 쿠키 가져오기
+            if (cookies != null) {
+                for (Cookie c : cookies) {
+                    String name = c.getName(); // 쿠키 이름 가져오기
+
+                    String value = c.getValue(); // 쿠키 값 가져오기
+                    if (name.equals("Authorization")) {
+                        bearerToken = value;
+                    }
+                }
+            }
+        }
         if (StringUtils.hasText(bearerToken)) {
             return bearerToken;
         }

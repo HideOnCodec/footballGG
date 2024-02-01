@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style>
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+            <img src="../static/image/logo.png" alt="해축지지 로고">
+            <h1> 이메일 인증키 발급 </h1>
+            <br>
+            <span style="color:#808080; font-size: 20px"> 회원가입을 위해 아래 인증코드를 입력해주세요 </span>
+            <br><br><br>
+
+            <div style="border-top: 1px solid black; border-bottom: 1px solid black; font-family:verdana; width: 450px;
+                        text-align: center">
+                <br><br>
+                <b style="color:black; font-size: 24px;">인증번호 </b>
+                <b style="color:red; font-size: 24px;" th:text="${code}"></b>
+                <br><br><br>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

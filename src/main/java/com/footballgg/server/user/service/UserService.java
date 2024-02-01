@@ -3,12 +3,14 @@ package com.footballgg.server.user.service;
 import com.footballgg.server.user.domain.User;
 import com.footballgg.server.user.dto.EmailLoginRequestDto;
 import com.footballgg.server.user.dto.EmailLoginResponseDto;
-import com.footballgg.server.user.dto.EmailRequestDto;
+import com.footballgg.server.user.dto.EmailJoinRequestDto;
 import com.footballgg.server.user.repository.UserRepository;
 import com.footballgg.server.user.security.jwt.JwtToken;
 import com.footballgg.server.user.security.jwt.JwtTokenProvider;
 import com.footballgg.server.user.security.service.SecurityUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +31,14 @@ public class UserService {
     private final SecurityUtil securityUtil;
 
     @Transactional
-    public User emailSignUp(EmailRequestDto emailRequestDto){
-        Optional<User> user = userRepository.findByEmail(emailRequestDto.getEmail());
-        if(user.isPresent())
-            return null; // 이미 존재하는 메일일 경우
+    public boolean isDuplicatedEmail(String email){
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.isPresent();
+    }
 
-        User userResult = userRepository.save(emailRequestDto.toEntity());
+    @Transactional
+    public User emailSignUp(EmailJoinRequestDto emailJoinRequestDto){
+        User userResult = userRepository.save(emailJoinRequestDto.toEntity());
 
         userResult.encodePassword(passwordEncoder);
         userResult.addUserAuthority();
@@ -43,8 +47,8 @@ public class UserService {
     }
 
     @Transactional
-    public EmailLoginResponseDto emailLogin(EmailLoginRequestDto emailLoginRequestDto){
-        User user = userRepository.findByEmail(emailLoginRequestDto.getEmail()).get();
+    public EmailLoginResponseDto emailLogin(EmailLoginRequestDto emailLoginRequestDto, HttpServletResponse response){
+        User user = userRepository.findByEmail(emailLoginRequestDto.getEmail()).orElse(null);
         if(user == null) { // 존재하지 않는 회원일 경우
             return null;
         }
@@ -60,6 +64,24 @@ public class UserService {
 
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
+
+        /*ACCESS TOKEN 쿠키로 발급*/
+        Cookie accessCookie = new Cookie("Authorization", accessToken);
+        accessCookie.setMaxAge(60 * 60); // 1시간 동안 유효
+        accessCookie.setPath("/");
+        accessCookie.setDomain("localhost");
+        accessCookie.setSecure(false);
+
+        response.addCookie(accessCookie);
+
+        /*REFRESH TOKEN 쿠키로 발급*/
+//        Cookie refreshCookie = new Cookie("Authorization", accessToken);
+//        refreshCookie.setMaxAge(7 * 24 * 60 * 60); // 7일 동안 유효
+//        refreshCookie.setPath("/");
+//        refreshCookie.setDomain("localhost");
+//        refreshCookie.setSecure(false);
+//
+//        response.addCookie(refreshCookie);
 
         return EmailLoginResponseDto.builder()
                 .accessToken(accessToken)
@@ -106,4 +128,5 @@ public class UserService {
                 .refreshToken(refreshToken)
                 .build();
     }
+
 }

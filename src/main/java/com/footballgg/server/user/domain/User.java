@@ -4,16 +4,16 @@ import com.footballgg.server.base.basetime.BaseTimeEntity;
 
 import com.footballgg.server.user.usertype.Role;
 import com.footballgg.server.user.usertype.UserType;
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import javax.validation.constraints.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
