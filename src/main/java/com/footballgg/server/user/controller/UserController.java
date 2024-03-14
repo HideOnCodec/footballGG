@@ -27,17 +27,13 @@ public class UserController {
     private final SecurityUtil securityUtil;
     private final EmailAuthService emailAuthService;
 
-    /**
-     * 메인 뷰
-     */
+    /** 메인 뷰 */
     @GetMapping("/index")
     public String index() {
         return "index";
     }
 
-    /**
-     * 회원가입 뷰
-     */
+    /** 회원가입 뷰 */
     @GetMapping("/join")
     public String join(Model model)
     {
@@ -45,8 +41,7 @@ public class UserController {
         return "join";
     }
 
-    /**
-     * 이메일 회원가입
+    /** 이메일 회원가입
      * [POST] /user/join/email
      * @Body  emailRequestDto : nickname,email, password
      */
@@ -69,9 +64,7 @@ public class UserController {
         return "redirect:/login";
     }
 
-    /**
-     * 로그인 뷰
-     */
+    /** 로그인 뷰 */
     @GetMapping("/login")
     public String login(@AuthenticationPrincipal User user, Model model) {
         /*이미 로그인된 사용자일 경우 인덱스 페이지로 강제이동.*/
@@ -83,8 +76,7 @@ public class UserController {
         return "login";
     }
 
-    /**
-     * 이메일 로그인
+    /** 이메일 로그인
      * [POST] /user/login/email
      */
     @PostMapping("/user/login/email") // @Valid Dto에 정의된 lombok에 맞게 객체를 검증해줌.
@@ -99,7 +91,7 @@ public class UserController {
         return "redirect:/index";
     }
 
-    /*로그아웃 API*/
+    /** 로그아웃 API*/
     @GetMapping("/user/logout")
     public String logout(@CookieValue(value = "Authorization", defaultValue = "", required = false) Cookie jwtCookie,
                          HttpServletResponse response) {
@@ -112,8 +104,7 @@ public class UserController {
         return "redirect:/login";
     }
 
-    /**
-     * 테스트
+    /** 테스트
      * [POST] /user/test
      * @Header Authociation : accessToken
      */

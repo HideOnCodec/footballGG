@@ -49,6 +49,9 @@ dependencies {
 
 	// 타임리프 공통 layout
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+	// h2 데이터베이스
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
