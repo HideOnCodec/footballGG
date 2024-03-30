@@ -1,6 +1,7 @@
 package com.footballgg.server.user.service;
 
-import com.footballgg.server.user.security.service.SecurityUtil;
+import com.footballgg.server.service.user.UserService;
+import com.footballgg.server.service.user.security.SecurityUtil;
 import org.junit.jupiter.api.Test;
 
 public class UserLoginTest {

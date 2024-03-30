@@ -2,8 +2,9 @@
     color: red;
     border-color: red;
 }
-.fieldError{
+.field-error{
     border-color: red;
+    color: #dc3545;
 }
 h1{
     text-align: center;

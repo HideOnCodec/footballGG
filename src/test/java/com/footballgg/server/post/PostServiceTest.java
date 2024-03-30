@@ -1,16 +1,14 @@
 package com.footballgg.server.post;
 
 
-import com.footballgg.server.post.domain.Post;
-import com.footballgg.server.post.dto.SavePostRequest;
-import com.footballgg.server.post.dto.UpdatePostRequest;
-import com.footballgg.server.post.repository.PostRepository;
-import com.footballgg.server.post.service.PostService;
-import com.footballgg.server.post.service.PostServiceImpl;
-import com.footballgg.server.user.domain.User;
-import com.footballgg.server.user.repository.UserRepository;
-import com.footballgg.server.user.usertype.Role;
-import com.footballgg.server.user.usertype.UserType;
+import com.footballgg.server.domain.post.Post;
+import com.footballgg.server.dto.post.SavePostRequest;
+import com.footballgg.server.dto.post.UpdatePostRequest;
+import com.footballgg.server.service.post.PostServiceImpl;
+import com.footballgg.server.domain.user.User;
+import com.footballgg.server.repository.user.UserRepository;
+import com.footballgg.server.domain.user.Role;
+import com.footballgg.server.domain.user.UserType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
