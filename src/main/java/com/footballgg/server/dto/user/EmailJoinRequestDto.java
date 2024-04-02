@@ -6,7 +6,6 @@ import com.footballgg.server.domain.user.UserType;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Data // getter/setter, requiredArgsController, ToString 등 합쳐놓은 세트
 @Getter
 @Setter
 public class EmailJoinRequestDto {

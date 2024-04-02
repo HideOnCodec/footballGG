@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http//www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/default_layout}">
 <head>
@@ -8,6 +8,9 @@
 <div layout:fragment="content" class="login-body">
   <img src="/image/logo.png" class="logo">
   <form class="form" role="form" th:action="@{/user/login/email}" method="post" th:object="${emailLoginRequestDto}">
+    <div th:if="${#fields.hasGlobalErrors()}">
+      <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메세지</p>
+    </div>
     <div class="form-group">
       <label class="h5" th:for="email">이메일 </label>
       <input type="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요." th:errorclass="field-error"/>

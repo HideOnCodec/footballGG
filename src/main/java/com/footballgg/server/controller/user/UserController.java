@@ -49,20 +49,21 @@ public class UserController {
      */
     @PostMapping("/user/join/email")
     public String joinByEmail(@Valid EmailJoinRequestDto emailJoinRequestDto, BindingResult bindingResult){
-
+        // 필드 에러
         if(bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             return "join";
         }
 
+        // 글로벌 에러
         if(userService.isDuplicatedEmail(emailJoinRequestDto.getEmail())){
-            bindingResult.rejectValue("email", "duplicatedEmail", new Object[]{}, null);
+            bindingResult.reject("duplicated");
             return "join";
         }
 
         // 이메일 인증 실패 시
         if(!emailAuthService.verifyAuthCode(emailJoinRequestDto.getEmail(), emailJoinRequestDto.getCode())) {
-            bindingResult.rejectValue("code", "failedAuthentication", new Object[]{}, null);
+            bindingResult.reject("failedAuthentication");
             return "join";
         }
 
@@ -93,6 +94,10 @@ public class UserController {
         }
 
         EmailLoginResponseDto emailLoginResponseDto = userService.emailLogin(emailLoginRequestDto,response);
+        if(emailLoginResponseDto == null){
+            bindingResult.reject("failedLogin");
+            return "login";
+        }
         log.info("request username = {}, password = {}", emailLoginRequestDto.getEmail(), emailLoginRequestDto.getPassword());
         log.info("jwtToken accessToken = {} refreshToken = {}", emailLoginResponseDto.getAccessToken(),emailLoginResponseDto.getRefreshToken());
         return "redirect:/index";

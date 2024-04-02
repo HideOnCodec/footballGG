@@ -8,6 +8,9 @@
 <div layout:fragment="content" class="join-body">
     <h1>회원가입</h1>
     <form class="form" th:action="@{/user/join/email}" method="post" th:object="${emailJoinRequestDto}">
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메시지</p>
+        </div>
         <div class="form-group">
             <label class="h5" th:for="nickname">닉네임 </label>
             <input type="text" th:field="*{nickname}" class="form-control" placeholder="닉네임을 입력하세요." th:errorclass="field-error"/>
