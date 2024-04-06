@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="/css/login.css">
 </head>
 <div layout:fragment="content" class="login-body">
-  <img src="/image/logo.png" class="logo">
+  <img src="/images/logo.png" class="logo">
   <form class="form" role="form" th:action="@{/user/login/email}" method="post" th:object="${emailLoginRequestDto}">
     <div th:if="${#fields.hasGlobalErrors()}">
       <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메세지</p>

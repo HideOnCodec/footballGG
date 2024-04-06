@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/error.css">
+  <title>Error Page</title>
+</head>
+<body>
+<div class="container">
+  <a th:href="@{/}">
+    <img class="simple-logo" src="/images/simple-logo.png"/>
+  </a>
+  <div class="message">
+    <p>죄송합니다. <b th:text="|${status} ${error}|"></b>가 발생했습니다.</p>
+    <b th:text="${error}"></b><span th:text="| ${timestamp}|"></span>
+  </div>
+  <img class="error-logo" src="/images/error-logo.png"/>
+</div> <!-- /container -->
+</body>
+</html>
