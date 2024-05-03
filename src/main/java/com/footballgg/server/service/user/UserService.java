@@ -28,7 +28,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final SecurityUtil securityUtil;
 
     @Transactional
     public boolean isDuplicatedEmail(String email){

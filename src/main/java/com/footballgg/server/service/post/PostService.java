@@ -7,6 +7,6 @@ import com.footballgg.server.domain.user.User;
 
 public interface PostService {
     Post savePost(SavePostRequest savePostRequest, User user);
-    Boolean deletePost(Long postId);
-    Post updatePost(UpdatePostRequest updatePostRequest, User user);
+    void deletePost(Long postId, User user);
+    Post updatePost(Long postId,UpdatePostRequest updatePostRequest, User user);
 }

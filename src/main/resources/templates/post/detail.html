@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글</title>
+    <link rel="stylesheet" href="/css/post/detail.css">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+</head>
+<div layout:fragment="content" class="post-detail">
+    <div class="post-head">
+        <p th:text="${category}" style="color: #737373">카테고리</p>
+        <p class="post-title" th:text="${post.title}"></p>
+        <div class="post-info-box">
+            <div class="post-info">
+                <div class="user-info"> <span style="font-weight: bold" th:text="${post.user.nickname}">닉네임</span></div>
+                <div class="view-info"><span style="font-weight: bold">조회수 </span><span th:text="|${post.view}회|"></span></div>
+                <div class="time-info">
+                    <span th:text="|생성일 ${#temporals.format(post.createDate,'yyyy-MM-dd')}|">생성일</span>
+                    <span th:text="|수정일 ${#temporals.format(post.modifiedDate,'yyyy-MM-dd')}|">수정일</span>
+                </div>
+            </div>
+            <div class="post-control">
+                <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/post/update/${post.postId}}'|">수정</button>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#checkModal">삭제</button>
+                <!-- 삭제 시 모달창-->
+                <div class="modal fade" id="checkModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">삭제 확인</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>정말 삭제하시겠습니까?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                                <form th:method="POST" th:action="@{|/post/delete/${post.postId}|}">
+                                    <button class="btn btn-primary" type="submit">삭제</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-content">
+        <span class="text-dark mb-0" th:utext="${post.content}">본문</span>
+    </div>
+
+    <div class="post-button">
+        <button type="button" class="btn btn-outline-danger"><i class="bi bi-heart"></i>좋아요</button>
+        <button type="button" class="btn btn-outline-secondary" th:onclick="|location.href='@{/post/list}'|"><i class="bi bi-list-task"></i>목록</button>
+    </div>
+</div>
+</html>

@@ -43,17 +43,9 @@ public class UserController {
         return "join";
     }
 
-    /** 이메일 회원가입
-     * [POST] /user/join/email
-     * @Body  emailRequestDto : nickname,email, password
-     */
+    /** 이메일 회원가입 */
     @PostMapping("/user/join/email")
     public String joinByEmail(@Valid EmailJoinRequestDto emailJoinRequestDto, BindingResult bindingResult){
-        // 필드 에러
-        if(bindingResult.hasErrors()) {
-            log.info("errors={}", bindingResult);
-            return "join";
-        }
 
         // 글로벌 에러
         if(userService.isDuplicatedEmail(emailJoinRequestDto.getEmail())){
@@ -83,15 +75,9 @@ public class UserController {
         return "login";
     }
 
-    /** 이메일 로그인
-     * [POST] /user/login/email
-     */
+    /** 이메일 로그인 */
     @PostMapping("/user/login/email") // @Valid Dto에 정의된 lombok에 맞게 객체를 검증해줌.
     public String loginByEmail(@Valid EmailLoginRequestDto emailLoginRequestDto, BindingResult bindingResult, HttpServletResponse response){
-        if(bindingResult.hasErrors()) {
-            log.info("errors={}", bindingResult);
-            return "login";
-        }
 
         EmailLoginResponseDto emailLoginResponseDto = userService.emailLogin(emailLoginRequestDto,response);
         if(emailLoginResponseDto == null){
@@ -116,10 +102,7 @@ public class UserController {
         return "redirect:/login";
     }
 
-    /** 테스트
-     * [POST] /user/test
-     * @Header Authociation : accessToken
-     */
+    /** 테스트 */
     @PostMapping("/user/test")
     public String test() {
         return securityUtil.getLoginUser().getNickname();

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -36,4 +38,7 @@ public class Post extends BaseTimeEntity {
 
     @ColumnDefault("0")
     private int favoriteCount;
+
+    @ElementCollection
+    private List<String> imgUrl;
 }

@@ -8,8 +8,17 @@ import com.footballgg.server.domain.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,37 +35,50 @@ public class PostServiceImpl implements PostService{
                 .content(savePostRequest.getContent())
                 .categoryId(savePostRequest.getCategoryId())
                 .user(user)
+                .view(1L)
                 .build();
-        postRepository.save(post);
-        return post;
+        return postRepository.save(post);
     }
 
     @Override
     @Transactional
-    public Boolean deletePost(Long postId) {
-        Optional<Post> post = postRepository.findPostByPostId(postId);
-        if(post.isPresent()) { // 게시글이 존재할 경우
-            postRepository.deletePostByPostId(postId);
-            return true;
-
+    public void deletePost(Long postId, User user) {
+        Post post = postRepository.findPostByPostId(postId)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
+        if(user == null || !user.equals(post.getUser())){
+            log.info("삭제 권한이 없음");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"삭제 권한이 없습니다.");
         }
-        else
-            return false;
+        postRepository.deletePostByPostId(post.getPostId());
     }
 
     @Override
     @Transactional
-    public Post updatePost(UpdatePostRequest updatePostRequest, User user) {
-        Post post = postRepository.findPostByPostId(updatePostRequest.getPostId()).get();
-        Post updatedPost = Post.builder()
-                .postId(post.getPostId())
-                .view(post.getView())
-                .categoryId(post.getCategoryId())
+    public Post updatePost(Long postId,UpdatePostRequest updatePostRequest, User user) {
+        Post post = postRepository.findPostByPostId(postId)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
+        if(user == null || !user.equals(post.getUser())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"수정 권한이 없습니다.");
+        }
+        Post updatedPost = post.toBuilder()
                 .title(updatePostRequest.getTitle())
                 .content(updatePostRequest.getContent())
-                .user(post.getUser())
                 .build();
         Post result = postRepository.save(updatedPost);
         return result;
+    }
+
+    /** 이미지 url 추출 */
+    @Transactional
+    public List<String> extractImageUrl(String content) {
+        Document doc = Jsoup.parse(content);
+        Elements elements =  doc.getElementsByTag("img");
+
+        List<String> imgurl = new ArrayList<>();
+        for (Element element : elements) {
+            imgurl.add(element.attr("src")); // src에서 url 추출
+        }
+
+        return imgurl;
     }
 }

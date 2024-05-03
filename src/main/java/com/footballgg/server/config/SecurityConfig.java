@@ -32,10 +32,10 @@ public class SecurityConfig{
                 configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize->
                 authorize
-                        .requestMatchers("/login","/join","/index","/images/**").permitAll() // 페이지
-                        .requestMatchers("/user/login/**","/user/join/**","/email/send").permitAll() // API
-                        .requestMatchers("/user/profile/**","/user/test").hasRole("USER")
-                        .requestMatchers("/**").permitAll() // CSS, JS 파일 허용
+                        .requestMatchers("/login","/join","/index","/images/**","/").permitAll() // 페이지
+                        .requestMatchers("/user/login/**","/user/join/**","/email/send","/post/**").permitAll() // API
+                        .requestMatchers("/css/**","/js/**").permitAll() // CSS, JS 파일 허용
+                        .requestMatchers("/user/profile/**","/user/test","/post/create").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login	// form 방식 로그인 사용

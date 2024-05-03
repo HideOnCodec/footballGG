@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 작성</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="/js/summernote/summernote-lite.js"></script>
+    <script src="/js/summernote/lang/summernote-ko-KR.js"></script>
+    <link rel="stylesheet" href="/css/summernote/summernote-lite.css">
+    <link rel="stylesheet" href="/css/post/write.css">
+</head>
+<div layout:fragment="content" class="write-body">
+  <form class="write-form" role="form" th:action="@{/post/create}" method="post" th:object="${savePostRequest}">
+    <select class="form-select" th:field="*{categoryId}">
+      <option value="0">==게시판 카테고리 선택==</option>
+      <option value="1">프리미어리그</option>
+      <option value="2">라리가</option>
+      <option value="3">분데스리그</option>
+      <option value="4">세리에</option>
+    </select>
+    <div class="field-error" th:errors="*{categoryId}">카테고리 오류</div>
+
+    <div class="mb-3">
+      <input type="text" class="form-control" th:field="*{title}" th:errorclass="field-error" placeholder="제목을 입력하세요.">
+      <div class="field-error" th:errors="*{title}">제목 오류</div>
+    </div>
+
+    <div class="mb-3">
+      <textarea class="form-control" id="summernote" th:type="text" th:field="*{content}" rows="100" th:errorclass="field-error"
+                placeholder="본문을 입력하세요."></textarea>
+      <div class="field-error" th:errors="*{content}">본문 오류</div>
+    </div>
+    <!--summernote-->
+    <script th:inline="javascript">
+        $('#summernote').summernote({
+
+            // 에디터 크기 설정
+            height: 800,
+            // 에디터 한글 설정
+            lang: 'ko-KR',
+            // 에디터에 커서 이동 (input창의 autofocus라고 생각하시면 됩니다.)
+            toolbar: [
+            // 글자 크기 설정
+            ['fontsize', ['fontsize']],
+            // 글자 [굵게, 기울임, 밑줄, 취소 선, 지우기]
+            ['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
+            // 글자색 설정
+            ['color', ['color']],
+            // 표 만들기
+            ['table', ['table']],
+            // 서식 [글머리 기호, 번호매기기, 문단정렬]
+            ['para', ['ul', 'ol', 'paragraph']],
+            // 줄간격 설정
+            ['height', ['height']],
+            // 이미지 첨부
+            ['insert',['picture']]
+            ],
+            // 추가한 글꼴
+            fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
+            // 추가한 폰트사이즈
+            fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72','96'],
+            // focus는 작성 페이지 접속시 에디터에 커서를 위치하도록 하려면 설정해주세요.
+            focus : true,
+            // callbacks은 이미지 업로드 처리입니다.
+            callbacks : {
+            onImageUpload : function(files, editor, welEditable) {
+                // 다중 이미지 처리
+                for (var i = 0; i < files.length; i++) {
+                    imageUploader(files[i], this);
+                }
+            },
+            onPaste: function (e) {
+                var clipboardData = e.originalEvent.clipboardData;
+                if (clipboardData && clipboardData.items && clipboardData.items.length) {
+                    var item = clipboardData.items[0];
+                    if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                        e.preventDefault();
+                    }
+                }
+            }
+        }});
+        function imageUploader(file, el) {
+            var formData = new FormData();
+            formData.append('image', file); // 꼭 지정 변수명과 일치시킬 것!
+
+            $.ajax({
+                data: formData,
+                type: "POST",
+                url: '/file/upload',
+                contentType: false,
+                processData: false,
+                enctype: 'multipart/form-data',
+                success: function (url) {
+                    $(el).summernote('insertImage', url, function ($image) {
+                        $image.css('width', "25%");
+                    });
+                    console.log(data);
+                }
+            });
+        }
+    </script>
+
+    <button type="submit" class="btn btn-primary">작성</button>
+  </form>
+</div>
+</html>

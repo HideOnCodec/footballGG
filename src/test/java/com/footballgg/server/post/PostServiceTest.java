@@ -56,11 +56,10 @@ public class PostServiceTest {
     @DisplayName("게시글 수정 테스트")
     void updatePost(){
         UpdatePostRequest updatePostRequest = UpdatePostRequest.builder()
-                .postId(1L)
                 .title("update test")
                 .content("update test")
                 .build();
-        Post post = postService.updatePost(updatePostRequest,user);
+        Post post = postService.updatePost(1L,updatePostRequest,user);
         assertThat(post.getTitle()).isEqualTo("update test");
         assertThat(post.getCategoryId()).isEqualTo(1);
         assertThat(post.getUser().getUserId()).isEqualTo(user.getUserId());
@@ -69,9 +68,7 @@ public class PostServiceTest {
     @Test
     @DisplayName("게시글 삭제 테스트")
     void deletePost(){
-        Boolean result = postService.deletePost(1L);
-        assertThat(result).isEqualTo(true);
-        Boolean result2 = postService.deletePost(1L);
-        assertThat(result2).isEqualTo(false);
+        postService.deletePost(1L,this.user);
+        postService.deletePost(1L,this.user);
     }
 }

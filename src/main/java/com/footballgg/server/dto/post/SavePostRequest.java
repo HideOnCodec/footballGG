@@ -1,11 +1,11 @@
 package com.footballgg.server.dto.post;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
-@Data // getter/setter, requiredArgsController, ToString 등 합쳐놓은 세트
 @Getter
 @Builder
 public class SavePostRequest {
@@ -13,6 +13,6 @@ public class SavePostRequest {
     private String title;
     @NotEmpty(message = "내용을 입력해주세요")
     private String content;
-    @NotEmpty(message = "카테고리를 선택해주세요")
+    @NotNull(message = "카테고리를 선택해주세요")
     private int categoryId;
 }

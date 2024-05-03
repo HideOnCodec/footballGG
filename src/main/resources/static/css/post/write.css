@@ -1,0 +1,12 @@
+.write-body{
+    width: 850px;
+    min-width: 500px;
+    margin:0 auto;
+}
+
+.write-form{
+    display: flex;
+    flex-direction: column;
+    gap : 10px;
+}
+

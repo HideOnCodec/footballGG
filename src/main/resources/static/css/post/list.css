@@ -1,0 +1,9 @@
+.post-list-body{
+    width: 1000px;
+    margin: 0 auto;
+}
+
+#post-category{
+    display: flex;
+    margin-bottom: 20px;
+}

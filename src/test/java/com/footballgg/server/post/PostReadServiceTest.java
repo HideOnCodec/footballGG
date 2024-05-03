@@ -90,7 +90,7 @@ public class PostReadServiceTest {
     @Test
     @DisplayName("특정 게시글 조회")
     void getPostByPostId(){
-        Post post = postReadService.getPostById(1L).get();
+        Post post = postReadService.getPostById(1L);
         assertThat(post.getUser().getUserId()).isEqualTo(1L);
     }
 

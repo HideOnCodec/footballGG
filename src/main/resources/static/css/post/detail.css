@@ -1,0 +1,49 @@
+.post-detail{
+    width: 900px;
+    margin: 0 auto;
+}
+
+.post-head, post-title{
+    margin-bottom: 15px;
+}
+
+.post-title{
+    font-size: 40px;
+}
+
+.post-info-box{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: #737373;
+    gap: 20px;
+}
+
+.post-content{
+    padding : 10px;
+    border-top: 2px solid #868e96;
+    height: 400px;
+    overflow-y: scroll;
+    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+    scrollbar-width: none; /* 파이어폭스 */
+    margin-bottom: 20px;
+}
+
+.post-content::-webkit-scrollbar {
+    display: none; /* 크롬, 사파리, 오페라, 엣지 */
+}
+
+.post-button{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+}
