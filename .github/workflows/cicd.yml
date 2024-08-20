@@ -16,6 +16,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          
       - name: Gradle Caching
         uses: actions/cache@v3
         with:
@@ -53,5 +54,5 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }} 
           script: |
             cd /home/ubuntu
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}
-            sudo docker-compose -p blue -f /home/ubuntu/docker-compose.blue.yml up -d
+            sudo chmod +x deploy.sh
+					  ./deploy.sh
