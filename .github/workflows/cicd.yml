@@ -45,4 +45,5 @@ jobs:
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}
             sudo touch .env
             echo "${{ secrets.ENV_VARS }}" | sudo tee .env > /dev/null
+            sudo chown ubuntu:ubuntu .env
             sudo docker-compose -p blue -f /home/ubuntu/docker-compose.blue.yml --env-file ./.env up -d
