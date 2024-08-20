@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTimeEntity {
     @CreatedDate // 생성일
+    @Column(updatable = false)
     private LocalDateTime createDate;
 
     @LastModifiedDate // 수정일

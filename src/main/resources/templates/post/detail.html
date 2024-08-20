@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="post-control">
-                <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/post/update/${post.postId}}'|">수정</button>
+                <a type="button" class="btn btn-primary" th:href="@{|/post/update/${post.postId}|}">수정</a>
                 <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#checkModal">삭제</button>
                 <!-- 삭제 시 모달창-->
                 <div class="modal fade" id="checkModal" tabindex="-1" aria-hidden="true">

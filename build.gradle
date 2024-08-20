@@ -31,7 +31,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검증
 	implementation 'org.jsoup:jsoup:1.15.3'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE' // 날짜 포맷
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+	// ssh
+	implementation 'com.jcraft:jsch:0.1.55'
 	// AWS
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	compileOnly 'org.projectlombok:lombok'

@@ -1,0 +1,85 @@
+# logging
+logging:
+  level:
+    com:
+      footballgg:
+        server: debug
+
+# Spring DataSource (MySQL)
+
+spring:
+  application:
+    name: footballGG
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create
+    generate-ddl: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  messages:
+    basename: messages,errors
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+# jwt
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
+# AWS S3
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET}
+    region:
+      static: ${AWS_REGION}
+    credentials:
+      accessKey: ${IAM_ACCESS_KEY}
+      secretKey: ${IAM_SECRET_KEY}
+    stack:
+      auto: false
+
+# \uC624\uB958 \uD398\uC774\uC9C0
+server:
+  error:
+    whitelabel:
+      enabled: true
+    path: /error
+    include-message: always
+
+# health-check
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

@@ -45,7 +45,7 @@ public class PostServiceImpl implements PostService{
     public void deletePost(Long postId, User user) {
         Post post = postRepository.findPostByPostId(postId)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
-        if(user == null || !user.equals(post.getUser())){
+        if(user == null || user.getUserId()!=post.getUser().getUserId()){
             log.info("삭제 권한이 없음");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"삭제 권한이 없습니다.");
         }
@@ -57,7 +57,7 @@ public class PostServiceImpl implements PostService{
     public Post updatePost(Long postId,UpdatePostRequest updatePostRequest, User user) {
         Post post = postRepository.findPostByPostId(postId)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
-        if(user == null || !user.equals(post.getUser())){
+        if(user == null || user.getUserId()!=post.getUser().getUserId()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"수정 권한이 없습니다.");
         }
         Post updatedPost = post.toBuilder()

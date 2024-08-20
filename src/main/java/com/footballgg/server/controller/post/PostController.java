@@ -57,20 +57,20 @@ public class PostController {
 
     /** 게시글 작성 */
     @PostMapping("/create")
-    public String create(@Valid SavePostRequest savePostRequest, RedirectAttributes redirectAttributes){
-        Post post = postService.savePost(savePostRequest,securityUtil.getLoginUser());
+    public String create(@Valid SavePostRequest savePostRequest, @AuthenticationPrincipal User user, RedirectAttributes redirectAttributes){
+        Post post = postService.savePost(savePostRequest,user);
+        log.info("create : user={}, post={}",user,post.getUser());
         List<String> imgUrl = postService.extractImageUrl(post.getContent());
-
 
         if(!imgUrl.isEmpty())
             fileService.updateFileMapping(post,imgUrl);
 
         redirectAttributes.addAttribute("postId",post.getPostId());
-        return "redirect:/post/{postId}";
+        return "redirect:/post/detail/{postId}";
     }
 
     /** 게시글 상세 조회 */
-    @GetMapping("/{postId}")
+    @GetMapping("/detail/{postId}")
     public String detail(@PathVariable Long postId, Model model){
         Post post = postReadService.getPostById(postId);
         model.addAttribute("post",post);
@@ -99,6 +99,37 @@ public class PostController {
         return "post/list";
     }
 
+    /** 게시글 수정하기 뷰 */
+    @GetMapping("/update/{postId}")
+    public String updateForm(@PathVariable Long postId, Model model){
+        Post post = postReadService.getPostById(postId);
+
+        UpdatePostRequest updatePostRequest = UpdatePostRequest.builder().build();
+        model.addAttribute("updatePostRequest",updatePostRequest);
+        model.addAttribute("post",post);
+
+        log.info("post = {}",post.getTitle());
+        setCategoryName(model,post.getCategoryId());
+        return "post/update";
+    }
+
+    /** 게시글 수정하기 */
+    @PatchMapping("/update/{postId}")
+    public String update(@PathVariable Long postId, @Valid UpdatePostRequest updatePostRequest, @AuthenticationPrincipal User user, Model model){
+        Post post = postService.updatePost(postId,updatePostRequest,user);
+        model.addAttribute("post",post);
+        setCategoryName(model,post.getCategoryId());
+        return "redirect:/post/detail/{postId}";
+    }
+
+    /** 게시글 삭제하기 */
+    @PostMapping("/delete/{postId}")
+    public String delete(@PathVariable Long postId, @AuthenticationPrincipal User user){
+        log.info("post id 삭제 = {}",postId);
+        postService.deletePost(postId,user);
+        return "redirect:/post/list";
+    }
+
     public void setCategoryName(Model model, int categoryId){
         Map<Integer,String> category = new HashMap<>();
         category.put(0,"전체");
@@ -108,32 +139,5 @@ public class PostController {
         category.put(4,"분데스리가");
 
         model.addAttribute("category",category.get(categoryId));
-    }
-
-    /** 게시글 수정하기 뷰 */
-    @GetMapping("/{postId}/update")
-    public String updateForm(@PathVariable Long postId, Model model){
-        Post post = postReadService.getPostById(postId);
-
-        UpdatePostRequest updatePostRequest = UpdatePostRequest.builder().build();
-        model.addAttribute("updatePost",updatePostRequest);
-        model.addAttribute("post",post);
-
-        return "post/update";
-    }
-
-    /** 게시글 수정하기 */
-    @PatchMapping("/update/{postId}")
-    public String update(@PathVariable Long postId, UpdatePostRequest updatePostRequest, @AuthenticationPrincipal User user, RedirectAttributes redirectAttributes){
-        postService.updatePost(postId,updatePostRequest,user);
-        return "redirect:/post/{postId}";
-    }
-
-    /** 게시글 삭제하기 */
-    @PostMapping("/delete/{postId}")
-    public String delete(@PathVariable Long postId, @AuthenticationPrincipal User user){
-        log.info("post id 삭제 = {}",postId);
-        postService.deletePost(postId,user);
-        return "redirect:/post/list";
     }
 }

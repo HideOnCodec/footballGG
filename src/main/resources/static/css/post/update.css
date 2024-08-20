@@ -10,3 +10,10 @@
     gap : 10px;
 }
 
+.update-btn{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}

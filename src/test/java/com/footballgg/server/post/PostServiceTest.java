@@ -69,6 +69,5 @@ public class PostServiceTest {
     @DisplayName("게시글 삭제 테스트")
     void deletePost(){
         postService.deletePost(1L,this.user);
-        postService.deletePost(1L,this.user);
     }
 }

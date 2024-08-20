@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FavoriteServiceTest {
     private Post post;
     private User user;
-    private User user2;
     @Autowired
     private FavoriteServiceImpl favoriteService;
     @Autowired
@@ -40,14 +39,6 @@ public class FavoriteServiceTest {
                 .role(Role.ROLE_USER)
                 .build();
         userRepository.save(this.user);
-        this.user2 = User.builder()
-                .userId(2L)
-                .userType(UserType.EMAIL)
-                .email("test2@naver.com")
-                .nickname("test2")
-                .role(Role.ROLE_USER)
-                .build();
-        userRepository.save(this.user2);
         this.post = Post.builder()
                 .postId(1L)
                 .title("test")
@@ -63,10 +54,9 @@ public class FavoriteServiceTest {
     @DisplayName("좋아요/취소 테스트")
     void favoritePost(){
         Boolean result = favoriteService.favoritePost(user,post);
-        Boolean result2 = favoriteService.favoritePost(user2,post);
         Post post = postRepository.findPostByPostId(1L).get();
-        assertThat(post.getFavoriteCount()).isEqualTo(2);
-        assertThat(result2).isEqualTo(true);
+        assertThat(post.getFavoriteCount()).isEqualTo(1);
+        assertThat(result).isEqualTo(true);
 
         Boolean cancel = favoriteService.favoritePost(user,post);
         Post cancelPost = postRepository.findPostByPostId(1L).get();

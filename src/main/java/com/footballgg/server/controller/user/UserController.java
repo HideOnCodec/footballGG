@@ -8,6 +8,7 @@ import com.footballgg.server.service.user.security.SecurityUtil;
 import com.footballgg.server.service.user.EmailAuthService;
 import com.footballgg.server.service.user.UserService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,7 @@ public class UserController {
 
     /** 로그인 뷰 */
     @GetMapping("/login")
-    public String login(@AuthenticationPrincipal User user, Model model) {
+    public String login(@AuthenticationPrincipal User user,Model model) {
         /*이미 로그인된 사용자일 경우 인덱스 페이지로 강제이동.*/
         if (user != null) {
             log.info(user.getNickname() + "님이 로그인 페이지로 이동을 시도함. -> index 페이지로 강제 이동 함.");
@@ -77,7 +78,7 @@ public class UserController {
 
     /** 이메일 로그인 */
     @PostMapping("/user/login/email") // @Valid Dto에 정의된 lombok에 맞게 객체를 검증해줌.
-    public String loginByEmail(@Valid EmailLoginRequestDto emailLoginRequestDto, BindingResult bindingResult, HttpServletResponse response){
+    public String loginByEmail(@Valid EmailLoginRequestDto emailLoginRequestDto, BindingResult bindingResult,  HttpServletRequest request, HttpServletResponse response){
 
         EmailLoginResponseDto emailLoginResponseDto = userService.emailLogin(emailLoginRequestDto,response);
         if(emailLoginResponseDto == null){
@@ -86,7 +87,7 @@ public class UserController {
         }
         log.info("request username = {}, password = {}", emailLoginRequestDto.getEmail(), emailLoginRequestDto.getPassword());
         log.info("jwtToken accessToken = {} refreshToken = {}", emailLoginResponseDto.getAccessToken(),emailLoginResponseDto.getRefreshToken());
-        return "redirect:/index";
+        return "redirect:"+request.getHeader("Referer");
     }
 
     /** 로그아웃 API*/

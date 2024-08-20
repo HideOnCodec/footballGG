@@ -32,8 +32,8 @@ public class SecurityConfig{
                 configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize->
                 authorize
-                        .requestMatchers("/login","/join","/index","/images/**","/").permitAll() // 페이지
-                        .requestMatchers("/user/login/**","/user/join/**","/email/send","/post/**").permitAll() // API
+                        .requestMatchers("/login","/join","/index","/images/**","/","/error").permitAll() // 페이지
+                        .requestMatchers("/user/login/**","/user/join/**","/email/send","/post/list","/post/detail/**","/actuator/health").permitAll() // API
                         .requestMatchers("/css/**","/js/**").permitAll() // CSS, JS 파일 허용
                         .requestMatchers("/user/profile/**","/user/test","/post/create").hasRole("USER")
                         .anyRequest().authenticated()

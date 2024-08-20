@@ -7,6 +7,7 @@
   <title>게시판</title>
   <link rel="stylesheet" href="/css/post/list.css">
   <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 </head>
 
 <div layout:fragment="content" class="post-list-body">
@@ -21,6 +22,10 @@
             th:classappend="${id == 3 ? 'active' : ''}">세리에</button>
     <button type="button" class="btn btn-outline-primary" th:onclick="|location.href='@{/post/list(categoryId=4)}'|"
             th:classappend="${id == 4 ? 'active' : ''}">분데스리가</button>
+  </div>
+  <div class="post-bar">
+    <
+    <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/post/create}'|"><i class="bi bi-feather"></i>글쓰기</button>
   </div>
   <div class="post-list">
     <table class="table table-striped">
@@ -37,9 +42,9 @@
       <tbody>
         <th:block th:each="post : ${postList}">
           <tr>
-            <td><a th:href="@{|/post/${post.postId}|}" th:text="${post.postId}">번호</a></td>
+            <td><a th:href="@{|/post/detail/${post.postId}|}" th:text="${post.postId}">번호</a></td>
             <td th:text="${post.user.nickname}">닉네임</td>
-            <td><a th:href="@{|/post/${post.postId}|}" th:text="${post.title}">제목</a></td>
+            <td><a th:href="@{|/post/detail/${post.postId}|}" th:text="${post.title}">제목</a></td>
             <td th:text="${post.categoryId == 1} ? '프리미어리그' : (${post.categoryId == 2} ? '라리가' :
             (${post.categoryId == 3} ? '세리에' : '분데스리가'))"></td>
             <td th:text="${#temporals.format(post.createDate,'yyyy-MM-dd')}">생성일</td>
