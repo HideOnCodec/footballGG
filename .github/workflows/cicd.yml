@@ -42,6 +42,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }} 
           script: |
             cd /home/ubuntu
+            echo "${{ secrets.DOCKERHUB_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             sudo chmod 666 /var/run/docker.sock
             sudo touch .env
             echo "${{ secrets.ENV_VARS }}" | sudo tee .env > /dev/null
