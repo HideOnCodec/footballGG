@@ -56,4 +56,5 @@ jobs:
           script: |
             cd /home/ubuntu
             sudo chmod +x deploy.sh
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}
             ./deploy.sh
