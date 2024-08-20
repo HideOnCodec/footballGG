@@ -42,6 +42,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }} 
           script: |
             cd /home/ubuntu
+            sudo chmod 666 /var/run/docker.sock
             sudo touch .env
             echo "${{ secrets.ENV_VARS }}" | sudo tee .env > /dev/null
             sudo chmod +x deploy.sh
