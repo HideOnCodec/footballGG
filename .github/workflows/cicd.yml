@@ -28,13 +28,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Print current directory
+        run: pwd
+
       - name: Set environment values
         run: |
           cd ./src/main/resources # resources 폴더로 이동
           touch ./env.properties # env.properties 파일 생성
           echo "${{ secrets.ENV_VARS }}" > ./env.properties 
+          cat ./env.properties  # 파일 내용 확인
         shell: bash
-        
+
       - name: Gradlew auth setting
         run: chmod +x ./gradlew
         
