@@ -1,10 +1,3 @@
-# logging
-logging:
-  level:
-    com:
-      footballgg:
-        server: debug
-
 # Spring DataSource (MySQL)
 
 spring:
@@ -82,4 +75,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: *
+# logging
+logging:
+  level:
+    com.footballgg.server: debug
+
