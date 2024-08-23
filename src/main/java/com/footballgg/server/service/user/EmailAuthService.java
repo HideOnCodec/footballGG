@@ -56,7 +56,7 @@ public class EmailAuthService {
         createCode(email); // 인증코드 생성 후 DB에 저장
         String setFrom = "qlrqod3356@gmail.com"; // 발신자 메일
         String toEmail = email; // 수신자 메일
-        String title = "[해축지지] 이메일 인증코드가 발급되었습니다."; // 이메일 제목
+        String title = "[footballGG] Email verification code"; // 이메일 제목
 
         MimeMessage message = emailSender.createMimeMessage();
         message.addRecipients(MimeMessage.RecipientType.TO, toEmail);
