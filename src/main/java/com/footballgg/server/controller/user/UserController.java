@@ -79,7 +79,7 @@ public class UserController {
         log.info("jwtToken accessToken = {} refreshToken = {}", emailLoginResponseDto.getAccessToken(),emailLoginResponseDto.getRefreshToken());
 
         String past = request.getHeader("Referer");
-        if(past.contains("join")||past.contains("login"))
+        if(past.contains("join"))
             return "redirect:/";
         else
             return "redirect:"+request.getHeader("Referer");
