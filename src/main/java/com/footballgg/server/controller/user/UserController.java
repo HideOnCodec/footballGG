@@ -51,7 +51,7 @@ public class UserController {
         }
 
         userService.emailSignUp(emailJoinRequestDto);
-        return "redirect:/login";
+        return "redirect:login";
     }
 
     /** 로그인 뷰 */
@@ -77,7 +77,12 @@ public class UserController {
         }
         log.info("request username = {}, password = {}", emailLoginRequestDto.getEmail(), emailLoginRequestDto.getPassword());
         log.info("jwtToken accessToken = {} refreshToken = {}", emailLoginResponseDto.getAccessToken(),emailLoginResponseDto.getRefreshToken());
-        return "redirect:"+request.getHeader("Referer");
+
+        String past = request.getHeader("Referer");
+        if(past.contains("join")||past.contains("login"))
+            return "redirect:/";
+        else
+            return "redirect:"+request.getHeader("Referer");
     }
 
     /** 마이페이지 뷰 */
