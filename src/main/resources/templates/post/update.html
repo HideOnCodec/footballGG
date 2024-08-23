@@ -14,12 +14,11 @@
 <div layout:fragment="content" class="write-body">
   <form class="write-form" role="form" th:action="@{|/post/update/${post.postId}|}" method="post" th:object="${updatePostRequest}">
     <input type="hidden" name="_method" value="PATCH">
-    <select class="form-select" name="categoryId">
-      <option value="0">==게시판 카테고리 선택==</option>
-      <option value="1" th:selected="${post.categoryId == 1}">프리미어리그</option>
-      <option value="2" th:selected="${post.categoryId == 2}">라리가</option>
-      <option value="3" th:selected="${post.categoryId == 3}">분데스리그</option>
-      <option value="4" th:selected="${post.categoryId == 4}">세리에</option>
+    <select class="form-select" name="category">
+      <option value="PREMIER" th:selected="${post.getCategory().getName().equals('프리미어리그')}">프리미어리그</option>
+      <option value="LALIGA" th:selected="${post.getCategory().getName().equals('라리가')}">라리가</option>
+      <option value="BUNDESRIGA" th:selected="${post.getCategory().getName().equals('분데스리그')}">분데스리그</option>
+      <option value="SERIEA" th:selected="${post.getCategory().getName().equals('세리에')}">세리에</option>
     </select>
 
     <div class="mb-3">

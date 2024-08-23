@@ -8,26 +8,26 @@ import com.footballgg.server.domain.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class FavoriteServiceImpl implements FavoriteService {
     private final FavoriteRepository favoriteRepository;
     private final PostRepository postRepository;
+
     @Override
-    @Transactional
-    public Boolean favoritePost(User user, Post post) {
+    public Boolean favoritePost(User user, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 게시글입니다."));
         Optional<Favorite> like = favoriteRepository.findFavoriteByUserAndPost(user,post);
         if(like.isPresent()){ // 이미 좋아요인 경우
-            Post updatePost = post.toBuilder()
-                    .favoriteCount(post.getFavoriteCount()-1) // 좋아요 -1
-                    .build();
             favoriteRepository.delete(like.get());
-            postRepository.save(updatePost);
             return false;
         }
         else{ // 좋아요가 없을 경우
@@ -35,12 +35,14 @@ public class FavoriteServiceImpl implements FavoriteService {
                     .user(user)
                     .post(post)
                     .build();
-            Post updatePost = post.toBuilder()
-                    .favoriteCount(post.getFavoriteCount()+1) // 좋아요 +1
-                    .build();
             favoriteRepository.save(createFavorite);
-            postRepository.save(updatePost);
             return true;
         }
+    }
+
+    @Override
+    public Boolean isFavorite(User user, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 게시글입니다."));
+        return favoriteRepository.findFavoriteByUserAndPost(user,post).isPresent();
     }
 }

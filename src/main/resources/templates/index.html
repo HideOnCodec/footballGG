@@ -1,11 +1,131 @@
 <!DOCTYPE html>
-<html xmlns:th="http//www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/default_layout}">
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8">
+    <title>해축GG</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 </head>
-<div layout:fragment="content">
-    <h1>해축GG</h1>
+<div layout:fragment="content" class="index-body">
+    <!-- 리그 일정표 -->
+    <div class="league-schedule">
+        <h3 th:text="'Season ' + ${season}">Season: 시즌</h3>
+        <div class="info-bar">
+            <div class="league-info-box">
+                <form id="filterForm" action="/" method="get">
+                    <img th:src="${apiResponse.getCompetition().getEmblem()}">
+                    <select id="leagueCode" name="leagueCode" onchange="this.form.submit()">
+                        <!-- 리그 옵션을 추가하고 선택된 값을 표시 -->
+                        <option value="PL" th:selected="${apiResponse.getCompetition().getName() == 'Premier League'}">프리미어리그</option>
+                        <option value="BL1" th:selected="${apiResponse.getCompetition().getName() == 'Bundesliga'}">분데스리가</option>
+                        <option value="SA" th:selected="${apiResponse.getCompetition().getName() == 'Serie A'}">세리에A</option>
+                        <option value="PD" th:selected="${apiResponse.getCompetition().getName() == 'Primera Division'}">라리가</option>
+                        <option value="CL" th:selected="${apiResponse.getCompetition().getName() == 'UEFA Champions League'}">챔피언스리그</option>
+                    </select>
+                    <!-- 선택된 주를 유지하는 필드 -->
+                    <input type="hidden" name="week" th:value="${week}" />
+                </form>
+                <!-- 왼쪽 화살표 버튼 -->
+                <a class="bi bi-arrow-left-circle-fill"
+                   th:href="@{/(week=${week}-1,leagueCode=${apiResponse.getCompetition().getCode()})}"
+                   aria-label="Previous Week"></a>
+                <span><span th:text="${dateFrom}"></span> ~ <span th:text="${dateTo}"></span></span>
+                <!-- 오른쪽 화살표 버튼 -->
+                <a class="bi bi-arrow-right-circle-fill"
+                   th:href="@{/(week=${week}+1,leagueCode=${apiResponse.getCompetition().getCode()})}"
+                   aria-label="Next Week"></a>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">경기 날짜</th>
+                <th scope="col">홈</th>
+                <th scope="col">어웨이</th>
+                <th scope="col">결과</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="match : ${apiResponse.matches}">
+                    <td><span th:text="${#strings.substring(match.utcDate, 0, 10) + ' ' + #strings.substring(match.utcDate, 11, 16)}"></span></td>
+                <td>
+                    <img th:src="${match.homeTeam.getCrest()}" alt="Home Team Crest" style="width: 50px; height: auto;">
+                    <span th:text="${match.homeTeam.getShortName()}">Home Team</span>
+                </td>
+                <td>
+                    <img th:src="${match.awayTeam.getCrest()}" alt="Away Team Crest" style="width: 50px; height: auto;">
+                    <span th:text="${match.awayTeam.getShortName()}">Away Team</span>
+                </td>
+
+                <td th:text="${match.score.fullTime.home != null ? match.score.fullTime.home + ' - ' + match.score.fullTime.away : 'N/A'}">
+                        N/A
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+    <div class="post-list">
+        <h3>인기글</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">닉네임</th>
+                <th scope="col">제목</th>
+                <th scope="col">카테고리</th>
+                <th scope="col">좋아요</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="post : ${popularList}">
+                <tr>
+                    <td><a th:href="@{|/post/detail/${post.postId}|}" th:text="${post.postId}">번호</a></td>
+                    <td th:text="${post.user.nickname}">닉네임</td>
+                    <td><a th:href="@{|/post/detail/${post.postId}|}" th:text="${post.title}">제목</a></td>
+                    <td th:text="${post.getCategory().name()}">카테고리</td>
+                    <td th:text="${post.getFavoriteList.size()}">좋아요</td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+
+        <!-- 페이징처리 시작 -->
+        <div th:if="${!popularList.isEmpty()}"><!--postList.isEmpty:페이지존재여부(게시물있으면 false,없으면 true)-->
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!postList.hasPrevious} ? 'disabled'">
+                    <!-- !postList.hasPrevious - disabled : 이전페이지가 없으면 비활성화-->
+
+                    <a class="page-link" th:href="@{/(page=${postList.number}-1)}">
+                        <!--이전페이지 링크-->
+                        <span>이전</span>
+                    </a>
+                </li>
+
+                <!--th:each :페이지 리스트 루프--> <!--#numbers.sequence(시작, 끝)-->
+                <li th:each="page: ${#numbers.sequence(1,endPage+1)}"
+
+                    th:if="${page >= start and page <= end}"
+
+                    th:classappend="${page == postList.number} ? 'active'"  class="page-item">
+                    <!--page == postList.number : 현재페이지와 같으면 active 적용-->
+
+                    <a th:text="${page}" class="page-link" th:href="@{/(page=${page})}"></a>
+                </li>
+                <li class="page-item" th:classappend="${!postList.hasNext} ? 'disabled'">
+                    <!-- !postList.hasNext - disabled : 다음페이지 없으면 비활성화-->
+
+                    <a class="page-link" th:href="@{/(page=${postList.number}+1)}">
+                        <!--다음페이지 링크-->
+                        <span>다음</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- 페이징처리 끝 -->
+    </div>
 </div>
 </html>

@@ -33,7 +33,7 @@ public class SecurityConfig{
                 .authorizeHttpRequests(authorize->
                 authorize
                         .requestMatchers("/login","/join","/index","/images/**","/","/error").permitAll() // 페이지
-                        .requestMatchers("/user/login/**","/user/join/**","/email/send","/post/list","/post/detail/**","/actuator/health").permitAll() // API
+                        .requestMatchers("/user/login/**","/user/join/**","/email/send","/post/list/category","/post/detail/**","/actuator/health").permitAll() // API
                         .requestMatchers("/css/**","/js/**").permitAll() // CSS, JS 파일 허용
                         .requestMatchers("/user/profile/**","/user/test","/post/create").hasRole("USER")
                         .anyRequest().authenticated()

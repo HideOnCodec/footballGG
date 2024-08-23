@@ -2,6 +2,8 @@ package com.footballgg.server.domain.user;
 
 import com.footballgg.server.base.basetime.BaseTimeEntity;
 
+import com.footballgg.server.domain.favorite.Favorite;
+import com.footballgg.server.domain.post.Post;
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -44,6 +47,14 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Favorite> favoriteList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> postList = new ArrayList<>();
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;

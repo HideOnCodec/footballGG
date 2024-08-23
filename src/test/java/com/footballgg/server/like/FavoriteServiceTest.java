@@ -1,5 +1,6 @@
 package com.footballgg.server.like;
 
+import com.footballgg.server.domain.post.Category;
 import com.footballgg.server.service.favorite.FavoriteServiceImpl;
 import com.footballgg.server.domain.post.Post;
 import com.footballgg.server.repository.post.PostRepository;
@@ -44,23 +45,22 @@ public class FavoriteServiceTest {
                 .title("test")
                 .content("test")
                 .view(1L)
-                .categoryId(1)
+                .category(Category.PREMIER)
                 .user(user)
-                .favoriteCount(0)
                 .build();
         postRepository.save(this.post);
     }
     @Test
     @DisplayName("좋아요/취소 테스트")
     void favoritePost(){
-        Boolean result = favoriteService.favoritePost(user,post);
+        Boolean result = favoriteService.favoritePost(user,post.getPostId());
         Post post = postRepository.findPostByPostId(1L).get();
-        assertThat(post.getFavoriteCount()).isEqualTo(1);
+        assertThat(post.getFavoriteList().size()).isEqualTo(1);
         assertThat(result).isEqualTo(true);
 
-        Boolean cancel = favoriteService.favoritePost(user,post);
+        Boolean cancel = favoriteService.favoritePost(user,post.getPostId());
         Post cancelPost = postRepository.findPostByPostId(1L).get();
         assertThat(cancel).isEqualTo(false);
-        assertThat(cancelPost.getFavoriteCount()).isEqualTo(0);
+        assertThat(cancelPost.getFavoriteList().size()).isEqualTo(0);
     }
 }

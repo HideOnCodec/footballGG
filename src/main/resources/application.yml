@@ -12,12 +12,9 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: create
-    generate-ddl: false
+      ddl-auto: update
+      format_sql: true
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
   mail:
     host: smtp.gmail.com
     port: ${MAIL_PORT}
@@ -61,6 +58,10 @@ cloud:
       secretKey: ${IAM_SECRET_KEY}
     stack:
       auto: false
+# API KEY
+football:
+  api:
+    key: ${API_KEY}
 
 # \uC624\uB958 \uD398\uC774\uC9C0
 server:

@@ -1,7 +1,9 @@
 package com.footballgg.server.post;
 
 
+import com.footballgg.server.domain.post.Category;
 import com.footballgg.server.domain.post.Post;
+import com.footballgg.server.dto.post.PostResponse;
 import com.footballgg.server.dto.post.SavePostRequest;
 import com.footballgg.server.dto.post.UpdatePostRequest;
 import com.footballgg.server.service.post.PostServiceImpl;
@@ -42,12 +44,12 @@ public class PostServiceTest {
     @DisplayName("게시글 저장 테스트")
     void savePost(){
         SavePostRequest postRequest = SavePostRequest.builder()
-                .categoryId(1)
+                .category(Category.PREMIER.toString())
                 .content("test")
                 .title("test")
                 .build();
 
-        Post post = postService.savePost(postRequest,user);
+        PostResponse post = postService.savePost(postRequest,user);
         assertThat(post.getTitle()).isEqualTo("test");
         assertThat(post.getPostId()).isEqualTo(1L);
     }
@@ -59,10 +61,10 @@ public class PostServiceTest {
                 .title("update test")
                 .content("update test")
                 .build();
-        Post post = postService.updatePost(1L,updatePostRequest,user);
+        PostResponse post = postService.updatePost(1L,updatePostRequest,user);
         assertThat(post.getTitle()).isEqualTo("update test");
-        assertThat(post.getCategoryId()).isEqualTo(1);
-        assertThat(post.getUser().getUserId()).isEqualTo(user.getUserId());
+        assertThat(post.getCategory()).isEqualTo(Category.PREMIER);
+        assertThat(post.getUserId()).isEqualTo(user.getUserId());
     }
 
     @Test

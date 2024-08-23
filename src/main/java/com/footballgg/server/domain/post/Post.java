@@ -2,11 +2,14 @@ package com.footballgg.server.domain.post;
 
 
 import com.footballgg.server.base.basetime.BaseTimeEntity;
+import com.footballgg.server.domain.favorite.Favorite;
+import com.footballgg.server.domain.file.FileMapping;
 import com.footballgg.server.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,15 +32,21 @@ public class Post extends BaseTimeEntity {
     @ColumnDefault("0")
     private Long view;
 
-    @ManyToOne // Post(N) : User(1)
+    @ManyToOne(fetch = FetchType.LAZY) // Post(N) : User(1)
     @JoinColumn(name="user_id")
     private User user;
 
-    @Column(name = "category_id")
-    private int categoryId;
+    @Column(nullable = false)
+    @Convert(converter = CategoryConverter.class)
+    private Category category;
 
-    @ColumnDefault("0")
-    private int favoriteCount;
+    @Builder.Default
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Favorite> favoriteList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<FileMapping> fileMappingList = new ArrayList<>();
 
     @ElementCollection
     private List<String> imgUrl;

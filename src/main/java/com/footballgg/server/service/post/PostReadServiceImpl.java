@@ -1,5 +1,7 @@
 package com.footballgg.server.service.post;
 
+import com.footballgg.server.domain.post.Category;
+import com.footballgg.server.dto.post.PostResponse;
 import com.footballgg.server.service.favorite.FavoriteServiceImpl;
 import com.footballgg.server.domain.post.Post;
 import com.footballgg.server.repository.post.PostRepository;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
@@ -26,44 +30,45 @@ public class PostReadServiceImpl implements PostReadService{
     @Override
     @Transactional
     public Page<Post> getPostAll(Pageable pageable) {
-        Page<Post> postList = postRepository.findAll(PageRequest.of(pageable.getPageNumber(), 10, Sort.by(Sort.Direction.DESC,"postId")));
-        return postList;
+        return postRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC,"postId")));
     }
 
     @Override
     @Transactional
     public Page<Post> getPostAllByUser(Pageable pageable, User user) {
-        Page<Post> postList = postRepository.findAllByUser(PageRequest.of(pageable.getPageNumber(), 10, Sort.by("postId")),user);
-        return postList;
+        return postRepository.findAllByUser(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("postId")),user);
     }
 
     @Override
     @Transactional
-    public Post getPostById(Long postId) {
-        return postRepository.findPostByPostId(postId).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
+    public PostResponse getPostById(Long postId) {
+        Post post =  postRepository.findPostByPostId(postId).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
+        return PostServiceImpl.toPostResponse(post);
     }
 
     @Override
     @Transactional
-    public Page<Post> getPostAllByCategoryId(Pageable pageable,int categoryId){
-        Page<Post> postList = postRepository
-                .findAllByCategoryId(PageRequest.of(pageable.getPageNumber(), 10, Sort.by(Sort.Direction.DESC,"postId")),categoryId);
-        return postList;
+    public Page<Post> getPostAllByCategory(Pageable pageable, Category category){
+        return postRepository
+                .findAllByCategory(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC,"postId")),category);
     }
+
     @Override
     @Transactional
     public Page<Post> getPopularPostAll(Pageable pageable) {
+        // 일주일 전까지 글만 포함
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minus(1, ChronoUnit.WEEKS);
         // 좋아요 10개 이상 시 인기글
-        Page<Post> postList = postRepository
-                .findAllByFavoriteCountGreaterThanEqual(PageRequest.of(pageable.getPageNumber(),10,Sort.by(Sort.Direction.DESC,"postId")),10);
-        return postList;
+        return postRepository
+                .findPopular(PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(),Sort.by(Sort.Direction.DESC,"postId")),1,oneWeekAgo);
     }
 
     @Override
     @Transactional
-    public Page<Post> getPopularPostByCategoryId(Pageable pageable,int categoryId) {
-        Page<Post> postList = postRepository
-                .findAllByFavoriteCountGreaterThanEqualAndCategoryId(PageRequest.of(pageable.getPageNumber(),10,Sort.by(Sort.Direction.DESC,"postId")),10,categoryId);
-        return postList;
+    public Page<Post> getPopularPostByCategory(Pageable pageable,Category category) {
+        // 일주일 전까지 글만 포함
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minus(1, ChronoUnit.WEEKS);
+        return postRepository
+                .findPopularByCategory(PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(),Sort.by(Sort.Direction.DESC,"postId")),1,category,oneWeekAgo);
     }
 }

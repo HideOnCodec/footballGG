@@ -1,0 +1,135 @@
+/* index.css */
+
+.index-body{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+}
+/* 리그 일정 스타일 */
+.league-schedule {
+    width: 50%; /* 전체 화면의 65% 너비 */
+    float: left; /* 왼쪽 정렬 */
+    margin-right: 20px; /* 오른쪽 여백 추가 */
+    margin-left: 20px;
+}
+
+.league-schedule h2 {
+    margin-bottom: 20px; /* 제목 아래 여백 */
+}
+
+.league-schedule .table {
+    width: 100%; /* 테이블이 부모 요소의 너비에 맞게 조절되도록 설정 */
+    border-collapse: collapse; /* 테이블 셀의 경계가 겹치지 않도록 설정 */
+}
+
+.league-schedule .table th, .league-schedule .table td {
+    text-align: left; /* 텍스트를 왼쪽 정렬 */
+    padding: 8px; /* 셀의 내부 여백 */
+    border-bottom: 1px solid #ddd; /* 셀의 하단에 경계 추가 */
+}
+
+/* 인기 게시물 리스트 스타일 */
+.post-list {
+    width: 30%; /* 전체 화면의 30% 너비 */
+    float: right; /* 오른쪽 정렬 */
+    margin-left: 20px; /* 왼쪽 여백 추가 (옵션) */
+    margin-right: 20px;
+    margin-top: 50px;
+}
+
+.post-list .table {
+    width: 100%; /* 테이블이 부모 요소의 너비에 맞게 조절되도록 설정 */
+    border-collapse: collapse; /* 테이블 셀의 경계가 겹치지 않도록 설정 */
+}
+
+.post-list .table th, .post-list .table td {
+    text-align: left; /* 텍스트를 왼쪽 정렬 */
+    padding: 8px; /* 셀의 내부 여백 */
+    border-bottom: 1px solid #ddd; /* 셀의 하단에 경계 추가 */
+}
+
+/* 공통 스타일 (선택 사항) */
+.table th {
+    background-color: #f2f2f2; /* 헤더 셀의 배경색 */
+}
+
+.table tr:hover {
+    background-color: #f5f5f5; /* 마우스 오버 시 셀 배경색 변경 */
+}
+
+/* index.css */
+
+/* 리그 정보 스타일 */
+.league-info {
+    font-size: 1.75rem; /* h3의 기본 크기와 비슷한 크기 */
+    display: flex; /* 이미지와 텍스트를 수평으로 정렬 */
+    align-items: center; /* 텍스트와 이미지의 수직 정렬 */
+}
+
+/* 이미지 스타일 */
+.league-info img {
+    width: 50px; /* 이미지 크기 조정 */
+    height: auto; /* 이미지 비율 유지 */
+    margin-right: 10px; /* 텍스트와 이미지 사이의 여백 */
+}
+
+/* 텍스트 스타일 */
+.league-info span {
+    font-size: 1.75rem; /* h3와 같은 크기 */
+}
+
+.class{
+    font-size: 20px;
+}
+
+.league-info-box{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.league-info-box > i{
+    font-size: 20px;
+    color : lightblue;
+}
+
+/* 앰블럼 이미지 크기 조절 */
+.league-info-box img {
+    width: 50px; /* 원하는 크기로 조정 */
+    height: auto;
+    vertical-align: middle; /* 텍스트와 수직 정렬 */
+    margin-right: 10px; /* 이미지와 텍스트 사이의 간격 */
+}
+
+/* select 요소 스타일링 */
+#leagueCode {
+    border: none; /* 테두리 제거 */
+    padding: 8px 12px; /* 패딩 조정 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    background-color: transparent; /* 배경색 제거 */
+    font-size: 16px; /* 폰트 크기 조정 */
+    color: #495057; /* 폰트 색상 조정 */
+    cursor: pointer; /* 커서 모양 변경 */
+}
+
+/* 드롭다운 옵션 스타일 */
+#leagueCode option {
+    background-color: #ffffff; /* 옵션 배경색 */
+    padding: 8px 12px; /* 옵션 패딩 */
+}
+
+/* 화살표 버튼 스타일 */
+a.bi {
+    font-size: 24px; /* 아이콘 크기 조정 */
+    color: #000; /* 아이콘 색상 조정 */
+    text-decoration: none; /* 기본 링크 스타일 제거 */
+    margin: 0 10px; /* 좌우 간격 조정 */
+    cursor: pointer; /* 클릭 커서 스타일 */
+}
+
+a.bi:hover {
+    color: #007bff; /* Hover 시 색상 변경 */
+}
+

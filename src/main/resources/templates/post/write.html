@@ -13,14 +13,14 @@
 </head>
 <div layout:fragment="content" class="write-body">
   <form class="write-form" role="form" th:action="@{/post/create}" method="post" th:object="${savePostRequest}">
-    <select class="form-select" th:field="*{categoryId}">
-      <option value="0">==게시판 카테고리 선택==</option>
-      <option value="1">프리미어리그</option>
-      <option value="2">라리가</option>
-      <option value="3">분데스리그</option>
-      <option value="4">세리에</option>
+    <select class="form-select" th:field="*{category}">
+        <option value="">==게시판 카테고리 선택==</option>
+        <option value="PREMIER">프리미어리그</option>
+        <option value="LALIGA">라리가</option>
+        <option value="BUNDESRIGA">분데스리그</option>
+        <option value="SERIEA">세리에</option>
     </select>
-    <div class="field-error" th:errors="*{categoryId}">카테고리 오류</div>
+    <div class="field-error" th:errors="*{category}">카테고리 오류</div>
 
     <div class="mb-3">
       <input type="text" class="form-control" th:field="*{title}" th:errorclass="field-error" placeholder="제목을 입력하세요.">

@@ -7,7 +7,6 @@ import com.footballgg.server.dto.user.EmailJoinRequestDto;
 import com.footballgg.server.repository.user.UserRepository;
 import com.footballgg.server.jwt.JwtToken;
 import com.footballgg.server.jwt.JwtTokenProvider;
-import com.footballgg.server.service.user.security.SecurityUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,51 +1,39 @@
 package com.footballgg.server.controller.post;
 
+import com.footballgg.server.domain.post.Category;
 import com.footballgg.server.domain.post.Post;
 import com.footballgg.server.domain.user.User;
+import com.footballgg.server.dto.post.PostResponse;
 import com.footballgg.server.dto.post.SavePostRequest;
 import com.footballgg.server.dto.post.UpdatePostRequest;
-import com.footballgg.server.service.file.FileServiceImpl;
-import com.footballgg.server.service.post.PostReadServiceImpl;
-import com.footballgg.server.service.post.PostServiceImpl;
-import com.footballgg.server.service.user.security.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.footballgg.server.service.favorite.FavoriteService;
+import com.footballgg.server.service.file.FileService;
+import com.footballgg.server.service.post.PostReadService;
+import com.footballgg.server.service.post.PostService;
+import com.footballgg.server.service.user.security.CustomUserDetailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(value = "/post")
 @Slf4j
+@RequestMapping("/post")
 public class PostController {
-    private final PostServiceImpl postService;
-    private final PostReadServiceImpl postReadService;
-    private final FileServiceImpl fileService;
-    private final SecurityUtil securityUtil;
-
-    /** 게시글 메인 뷰(전체 조회) */
-    @GetMapping("/get/all")
-    public String getAll(@PageableDefault(page = 1) Pageable pageable, Model model){
-
-        return "post/list";
-    }
+    private final PostService postService;
+    private final PostReadService postReadService;
+    private final FileService fileService;
+    private final FavoriteService favoriteService;
 
     /** 게시글 작성 뷰*/
     @GetMapping("/create")
@@ -58,12 +46,12 @@ public class PostController {
     /** 게시글 작성 */
     @PostMapping("/create")
     public String create(@Valid SavePostRequest savePostRequest, @AuthenticationPrincipal User user, RedirectAttributes redirectAttributes){
-        Post post = postService.savePost(savePostRequest,user);
-        log.info("create : user={}, post={}",user,post.getUser());
+        PostResponse post = postService.savePost(savePostRequest,user);
+        log.info("create : user={}, post={}",user.getUserId(),post.getUserId());
         List<String> imgUrl = postService.extractImageUrl(post.getContent());
 
         if(!imgUrl.isEmpty())
-            fileService.updateFileMapping(post,imgUrl);
+            fileService.updateFileMapping(post.getPostId(),imgUrl);
 
         redirectAttributes.addAttribute("postId",post.getPostId());
         return "redirect:/post/detail/{postId}";
@@ -71,73 +59,76 @@ public class PostController {
 
     /** 게시글 상세 조회 */
     @GetMapping("/detail/{postId}")
-    public String detail(@PathVariable Long postId, Model model){
-        Post post = postReadService.getPostById(postId);
+    public String detail(@AuthenticationPrincipal User user,@PathVariable Long postId, Model model){
+        PostResponse post = postReadService.getPostById(postId);
+        model.addAttribute("isWriter", user == null ? false : post.getUserId() == user.getUserId());
         model.addAttribute("post",post);
-        setCategoryName(model,post.getCategoryId());
+        model.addAttribute("category",post.getCategory());
+        model.addAttribute("isLike",favoriteService.isFavorite(user,post.getPostId()));
         return "post/detail";
     }
 
-    /** 게시글 카테고리별 전체 리스트 조회
-     * ?category=0 (전체조회) 1 : 프리미어리그 2 : 라리가 3 : 분데스리가 4 : 세리에
-     * */
-    @GetMapping("/list")
-    public String getPostAll(@RequestParam(defaultValue = "0") int categoryId, @PageableDefault(page = 0) Pageable pageable, Model model){
-        Page<Post> postList = null;
-        log.info("categoryId={}",categoryId);
-        if(categoryId == 0){
-            postList = postReadService.getPostAll(pageable);
-        }
-        else{
-            postList = postReadService.getPostAllByCategoryId(pageable,categoryId);
-        }
+    /** 게시글 카테고리별 전체 리스트 조회 */
+    @GetMapping("/list/category")
+    public String getPostAll(@RequestParam(required = false) Category category, @PageableDefault(page = 0,size = 10) Pageable pageable, Model model){
+        Page<Post> postList = category == null ? postReadService.getPostAll(pageable) : postReadService.getPostAllByCategory(pageable,category);
         model.addAttribute("postList",postList);
+        model.addAttribute("category",category == null ? "ALL" : category);
         model.addAttribute("endPage",postList.getTotalPages()-1);
         model.addAttribute("start",postList.getNumber()-5);
         model.addAttribute("end",postList.getNumber()+5);
-        model.addAttribute("id",categoryId);
+
         return "post/list";
+    }
+
+    /** 인기글 조회 */
+    @GetMapping("/list/popular")
+    public String getPopularPost(@RequestParam(required = false) Category category, @PageableDefault(page = 0,size = 10) Pageable pageable, Model model){
+        Page<Post> postList = category == null ? postReadService.getPopularPostAll(pageable) : postReadService.getPopularPostByCategory(pageable,category);
+        model.addAttribute("postList",postList);
+        model.addAttribute("category",category == null ? "ALL" : category);
+        model.addAttribute("endPage",postList.getTotalPages()-1);
+        model.addAttribute("start",postList.getNumber()-5);
+        model.addAttribute("end",postList.getNumber()+5);
+
+        return "post/popular-list";
     }
 
     /** 게시글 수정하기 뷰 */
     @GetMapping("/update/{postId}")
     public String updateForm(@PathVariable Long postId, Model model){
-        Post post = postReadService.getPostById(postId);
+        PostResponse post = postReadService.getPostById(postId);
 
         UpdatePostRequest updatePostRequest = UpdatePostRequest.builder().build();
         model.addAttribute("updatePostRequest",updatePostRequest);
         model.addAttribute("post",post);
+        model.addAttribute("category",post.getCategory());
 
         log.info("post = {}",post.getTitle());
-        setCategoryName(model,post.getCategoryId());
         return "post/update";
     }
 
     /** 게시글 수정하기 */
     @PatchMapping("/update/{postId}")
     public String update(@PathVariable Long postId, @Valid UpdatePostRequest updatePostRequest, @AuthenticationPrincipal User user, Model model){
-        Post post = postService.updatePost(postId,updatePostRequest,user);
+        PostResponse post = postService.updatePost(postId,updatePostRequest,user);
         model.addAttribute("post",post);
-        setCategoryName(model,post.getCategoryId());
+        model.addAttribute("category",post.getCategory());
         return "redirect:/post/detail/{postId}";
     }
 
     /** 게시글 삭제하기 */
     @PostMapping("/delete/{postId}")
     public String delete(@PathVariable Long postId, @AuthenticationPrincipal User user){
-        log.info("post id 삭제 = {}",postId);
         postService.deletePost(postId,user);
-        return "redirect:/post/list";
+        return "redirect:/post/list/category";
     }
 
-    public void setCategoryName(Model model, int categoryId){
-        Map<Integer,String> category = new HashMap<>();
-        category.put(0,"전체");
-        category.put(1,"프리미어리그");
-        category.put(2,"라리가");
-        category.put(3,"세리에");
-        category.put(4,"분데스리가");
-
-        model.addAttribute("category",category.get(categoryId));
+    /** 게시글 좋아요 */
+    @PostMapping("/like/{postId}")
+    public String like(@PathVariable Long postId, @AuthenticationPrincipal User user,Model model){
+        model.addAttribute("isLike",favoriteService.favoritePost(user,postId));
+        return "redirect:/post/detail/{postId}";
     }
+
 }

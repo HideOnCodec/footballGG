@@ -16,9 +16,9 @@ public class FileMapping {
     @Column(name = "file_id")
     private Long fileId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Post postId;
+    private Post post;
 
     @Column(name = "file_url")
     @NotEmpty

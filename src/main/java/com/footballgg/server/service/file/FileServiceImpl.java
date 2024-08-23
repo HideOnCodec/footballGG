@@ -5,12 +5,15 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.footballgg.server.domain.file.FileMapping;
 import com.footballgg.server.domain.post.Post;
 import com.footballgg.server.repository.file.FileMappingRepository;
+import com.footballgg.server.repository.post.PostRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +32,9 @@ public class FileServiceImpl implements FileService{
     private String bucket;
     private final AmazonS3 amazonS3;
     private final FileMappingRepository fileMappingRepository;
+    private final PostRepository postRepository;
 
+    @Override
     @Transactional
     public String upload(MultipartFile multipartFile) throws IOException {
         // 파일 이름의 중복을 막기 위해 "UUID(랜덤 값) + 원본파일이름"로 연결함
@@ -51,6 +56,7 @@ public class FileServiceImpl implements FileService{
         return amazonS3.getUrl(bucket, s3FileName).toString();
     }
 
+    @Override
     @Transactional
     public void fileDelete(String fileName) {
         log.info(fileName);
@@ -66,8 +72,10 @@ public class FileServiceImpl implements FileService{
         return fileMappingRepository.save(fileMapping);
     }
 
+    @Override
     @Transactional
-    public List<FileMapping> updateFileMapping(Post post, List<String> fileUrl){
+    public List<FileMapping> updateFileMapping(Long postId, List<String> fileUrl){
+        Post post = postRepository.findById(postId).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
         List<FileMapping> fileMappingList = new ArrayList<>();
         for(String url : fileUrl){
             fileMappingList.add(fileMappingRepository.findByFileUrl(url).get());
@@ -75,7 +83,7 @@ public class FileServiceImpl implements FileService{
         List<FileMapping> updatedFileMappingList = new ArrayList<>();
         for(FileMapping file : fileMappingList){
             FileMapping updateFile = file.toBuilder()
-                    .postId(post)
+                    .post(post)
                     .build();
             updatedFileMappingList.add(updateFile);
         }

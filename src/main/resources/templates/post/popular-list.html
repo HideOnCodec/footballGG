@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>인기글</title>
+    <link rel="stylesheet" href="/css/post/list.css">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+</head>
+
+<div layout:fragment="content" class="post-list-body">
+    <div id="post-category" class="btn-group" role="group" aria-label="post type">
+        <button type="button" class="btn btn-outline-primary" th:onclick="|location.href='@{/post/list/popular}'|"
+                th:classappend="${category.equals('ALL') ? 'active' : ''}">전체</button>
+        <button type="button" class="btn btn-outline-primary" th:onclick="|location.href='@{/post/list/popular(category=PREMIER)}'|"
+                th:classappend="${category.equals(T(com.footballgg.server.domain.post.Category).PREMIER) ? 'active' : ''}">프리미어리그</button>
+        <button type="button" class="btn btn-outline-primary" th:onclick="|location.href='@{/post/list/popular(category=LALIGA)}'|"
+                th:classappend="${category.equals(T(com.footballgg.server.domain.post.Category).LALIGA) ? 'active' : ''}">라리가</button>
+        <button type="button" class="btn btn-outline-primary" th:onclick="|location.href='@{/post/list/popular(category=SERIEA)}'|"
+                th:classappend="${category.equals(T(com.footballgg.server.domain.post.Category).SERIEA) ? 'active' : ''}">세리에</button>
+        <button type="button" class="btn btn-outline-primary" th:onclick="|location.href='@{/post/list/popular(category=BUNDESLIGA)}'|"
+                th:classappend="${category.equals(T(com.footballgg.server.domain.post.Category).BUNDESLIGA) ? 'active' : ''}">분데스리가</button>
+    </div>
+    <div class="post-bar">
+        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/post/create}'|"><i class="bi bi-feather"></i>글쓰기</button>
+    </div>
+    <div class="post-list">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">닉네임</th>
+                <th scope="col">제목</th>
+                <th scope="col">카테고리</th>
+                <th scope="col">좋아요</th>
+                <th scope="col">생성일</th>
+                <th scope="col">수정일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="post : ${postList}">
+                <tr>
+                    <td><a th:href="@{|/post/detail/${post.postId}|}" th:text="${post.postId}">번호</a></td>
+                    <td th:text="${post.user.nickname}">닉네임</td>
+                    <td><a th:href="@{|/post/detail/${post.postId}|}" th:text="${post.title}">제목</a></td>
+                    <td th:text="${post.getCategory().name()}"></td>
+                    <td th:text="${post.getFavoriteList().size()}">좋아요</td>
+                    <td th:text="${#temporals.format(post.createDate,'yyyy-MM-dd')}">생성일</td>
+                    <td th:text="${#temporals.format(post.modifiedDate,'yyyy-MM-dd')}">수정일</td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+
+        <!-- 페이징처리 시작 -->
+        <div th:if="${!postList.isEmpty()}"><!--postList.isEmpty:페이지존재여부(게시물있으면 false,없으면 true)-->
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!postList.hasPrevious} ? 'disabled'">
+                    <!-- !postList.hasPrevious - disabled : 이전페이지가 없으면 비활성화-->
+
+                    <a class="page-link" th:href="@{/post/list/popular(page=${postList.number}-1,category=${category})}">
+                        <!--이전페이지 링크-->
+                        <span>이전</span>
+                    </a>
+                </li>
+
+                <!--th:each :페이지 리스트 루프--> <!--#numbers.sequence(시작, 끝)-->
+                <li th:each="page: ${#numbers.sequence(1,endPage+1)}"
+
+                    th:if="${page >= start and page <= end}"
+
+                    th:classappend="${page == postList.number} ? 'active'"  class="page-item">
+                    <!--page == postList.number : 현재페이지와 같으면 active 적용-->
+
+                    <a th:text="${page}" class="page-link" th:href="@{/post/list/popular(page=${page},category=${category})}"></a>
+                </li>
+                <li class="page-item" th:classappend="${!postList.hasNext} ? 'disabled'">
+                    <!-- !postList.hasNext - disabled : 다음페이지 없으면 비활성화-->
+
+                    <a class="page-link" th:href="@{/post/list/popular(page=${postList.number}+1,category=${category})}">
+                        <!--다음페이지 링크-->
+                        <span>다음</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- 페이징처리 끝 -->
+    </div>
+
+</div>
+</html>

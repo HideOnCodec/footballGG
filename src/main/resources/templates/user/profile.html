@@ -8,6 +8,14 @@
   <link rel="stylesheet" href="/css/user/profile.css">
 </head>
 <div layout:fragment="content" class="my-page">
-
+  <div class="profile-box">
+    <h5>닉네임 : <span th:text="${user.nickname}">닉네임</span></h5>
+    <h5>이메일 : <span th:text="${user.email}">이메일</span></h5>
+    <h5>가입 날짜 : <span th:text="${user.createDate}">가입 날짜</span></h5>
+    <!-- 로그아웃 버튼 -->
+    <form th:action="@{/user/logout}" method="get">
+      <button id="logout-btn" type="submit" class="btn btn-outline-primary"><i class="bi bi-box-arrow-left">로그 아웃</i></button>
+    </form>
+  </div>
 </div>
 </html>

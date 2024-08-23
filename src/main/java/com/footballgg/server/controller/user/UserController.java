@@ -4,7 +4,6 @@ import com.footballgg.server.domain.user.User;
 import com.footballgg.server.dto.user.EmailLoginRequestDto;
 import com.footballgg.server.dto.user.EmailLoginResponseDto;
 import com.footballgg.server.dto.user.EmailJoinRequestDto;
-import com.footballgg.server.service.user.security.SecurityUtil;
 import com.footballgg.server.service.user.EmailAuthService;
 import com.footballgg.server.service.user.UserService;
 import jakarta.servlet.http.Cookie;
@@ -17,9 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @RequiredArgsConstructor
@@ -27,14 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Slf4j
 public class UserController {
     private final UserService userService;
-    private final SecurityUtil securityUtil;
     private final EmailAuthService emailAuthService;
-
-    /** 메인 뷰 */
-    @GetMapping("/index")
-    public String index() {
-        return "index";
-    }
 
     /** 회원가입 뷰 */
     @GetMapping("/join")
@@ -70,7 +60,7 @@ public class UserController {
         /*이미 로그인된 사용자일 경우 인덱스 페이지로 강제이동.*/
         if (user != null) {
             log.info(user.getNickname() + "님이 로그인 페이지로 이동을 시도함. -> index 페이지로 강제 이동 함.");
-            return "redirect:/index";
+            return "redirect:/";
         }
         model.addAttribute("emailLoginRequestDto",new EmailLoginRequestDto());
         return "login";
@@ -90,6 +80,13 @@ public class UserController {
         return "redirect:"+request.getHeader("Referer");
     }
 
+    /** 마이페이지 뷰 */
+    @GetMapping("/user/profile")
+    public String profile(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute(user);
+        return "user/profile";
+    }
+
     /** 로그아웃 API*/
     @GetMapping("/user/logout")
     public String logout(@CookieValue(value = "Authorization", defaultValue = "", required = false) Cookie jwtCookie,
@@ -100,12 +97,6 @@ public class UserController {
         jwtCookie.setPath("/");
         response.addCookie(jwtCookie);
 
-        return "redirect:/login";
-    }
-
-    /** 테스트 */
-    @PostMapping("/user/test")
-    public String test() {
-        return securityUtil.getLoginUser().getNickname();
+        return "redirect:/";
     }
 }

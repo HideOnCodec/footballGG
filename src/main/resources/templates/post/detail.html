@@ -15,16 +15,18 @@
         <p class="post-title" th:text="${post.title}"></p>
         <div class="post-info-box">
             <div class="post-info">
-                <div class="user-info"> <span style="font-weight: bold" th:text="${post.user.nickname}">닉네임</span></div>
+                <div class="user-info"> <span style="font-weight: bold" th:text="${post.nickname}">닉네임</span></div>
                 <div class="view-info"><span style="font-weight: bold">조회수 </span><span th:text="|${post.view}회|"></span></div>
                 <div class="time-info">
-                    <span th:text="|생성일 ${#temporals.format(post.createDate,'yyyy-MM-dd')}|">생성일</span>
-                    <span th:text="|수정일 ${#temporals.format(post.modifiedDate,'yyyy-MM-dd')}|">수정일</span>
+                    <span th:text="|생성일 ${#temporals.format(post.createdAt,'yyyy-MM-dd')}|">생성일</span>
+                    <span th:text="|수정일 ${#temporals.format(post.updatedAt,'yyyy-MM-dd')}|">수정일</span>
                 </div>
             </div>
             <div class="post-control">
-                <a type="button" class="btn btn-primary" th:href="@{|/post/update/${post.postId}|}">수정</a>
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#checkModal">삭제</button>
+                <a type="button" class="btn btn-primary" th:href="@{|/post/update/${post.postId}|}" th:if="${isWriter==true}">수정</a>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#checkModal" th:if="${isWriter==true}">
+                    삭제
+                </button>
                 <!-- 삭제 시 모달창-->
                 <div class="modal fade" id="checkModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
@@ -54,8 +56,12 @@
     </div>
 
     <div class="post-button">
-        <button type="button" class="btn btn-outline-danger"><i class="bi bi-heart"></i>좋아요</button>
-        <button type="button" class="btn btn-outline-secondary" th:onclick="|location.href='@{/post/list}'|"><i class="bi bi-list-task"></i>목록</button>
+        <form th:method="POST" th:action="@{|/post/like/${post.getPostId()}|}">
+            <button type="submit" th:class="${isLike} ? 'btn btn-danger' : 'btn btn-outline-danger'">
+                <i class="bi bi-bookmark-heart"></i><span th:text="${post.favoriteSize}">좋아요 수</span>
+            </button>
+        </form>
+        <button type="button" class="btn btn-outline-secondary" th:onclick="|location.href='@{/post/list/category}'|"><i class="bi bi-list-task"></i>목록</button>
     </div>
 </div>
 </html>

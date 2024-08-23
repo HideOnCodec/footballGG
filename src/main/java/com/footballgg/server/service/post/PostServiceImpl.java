@@ -1,8 +1,12 @@
 package com.footballgg.server.service.post;
 
+import com.footballgg.server.domain.file.FileMapping;
+import com.footballgg.server.domain.post.Category;
 import com.footballgg.server.domain.post.Post;
+import com.footballgg.server.dto.post.PostResponse;
 import com.footballgg.server.dto.post.SavePostRequest;
 import com.footballgg.server.dto.post.UpdatePostRequest;
+import com.footballgg.server.repository.file.FileMappingRepository;
 import com.footballgg.server.repository.post.PostRepository;
 import com.footballgg.server.domain.user.User;
 import jakarta.transaction.Transactional;
@@ -26,18 +30,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
+    private final FileMappingRepository fileMappingRepository;
 
     @Override
     @Transactional
-    public Post savePost(SavePostRequest savePostRequest, User user) {
+    public PostResponse savePost(SavePostRequest savePostRequest, User user) {
         Post post = Post.builder()
                 .title(savePostRequest.getTitle())
                 .content(savePostRequest.getContent())
-                .categoryId(savePostRequest.getCategoryId())
-                .user(user)
+                .category(Category.valueOf(savePostRequest.getCategory()))
                 .view(1L)
+                .user(user)
                 .build();
-        return postRepository.save(post);
+        Post result = postRepository.save(post);
+        return toPostResponse(result);
     }
 
     @Override
@@ -46,7 +52,6 @@ public class PostServiceImpl implements PostService{
         Post post = postRepository.findPostByPostId(postId)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
         if(user == null || user.getUserId()!=post.getUser().getUserId()){
-            log.info("삭제 권한이 없음");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"삭제 권한이 없습니다.");
         }
         postRepository.deletePostByPostId(post.getPostId());
@@ -54,7 +59,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @Transactional
-    public Post updatePost(Long postId,UpdatePostRequest updatePostRequest, User user) {
+    public PostResponse updatePost(Long postId,UpdatePostRequest updatePostRequest, User user) {
         Post post = postRepository.findPostByPostId(postId)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글입니다."));
         if(user == null || user.getUserId()!=post.getUser().getUserId()){
@@ -63,12 +68,21 @@ public class PostServiceImpl implements PostService{
         Post updatedPost = post.toBuilder()
                 .title(updatePostRequest.getTitle())
                 .content(updatePostRequest.getContent())
+                .category(updatePostRequest.getCategory())
                 .build();
         Post result = postRepository.save(updatedPost);
-        return result;
+        List<String> imageUrls =extractImageUrl(post.getContent());
+        List<FileMapping> fileMappingList = fileMappingRepository.findAllByPost(post);
+        for(FileMapping fileMapping : fileMappingList){
+            if(!imageUrls.contains(fileMapping.getFileUrl())){
+                fileMappingRepository.delete(fileMapping);
+            }
+        }
+        return toPostResponse(result);
     }
 
     /** 이미지 url 추출 */
+    @Override
     @Transactional
     public List<String> extractImageUrl(String content) {
         Document doc = Jsoup.parse(content);
@@ -80,5 +94,20 @@ public class PostServiceImpl implements PostService{
         }
 
         return imgurl;
+    }
+
+    public static PostResponse toPostResponse(Post post) {
+        return PostResponse.builder()
+                .postId(post.getPostId())
+                .userId(post.getUser().getUserId())
+                .category(post.getCategory())
+                .content(post.getContent())
+                .title(post.getTitle())
+                .view(post.getView())
+                .nickname(post.getUser().getNickname())
+                .createdAt(post.getCreateDate())
+                .updatedAt(post.getModifiedDate())
+                .favoriteSize(post.getFavoriteList().size())
+                .build();
     }
 }
