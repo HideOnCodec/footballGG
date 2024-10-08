@@ -1,11 +1,13 @@
 package com.footballgg.server.controller.post;
 
+import com.footballgg.server.domain.comment.Comment;
 import com.footballgg.server.domain.post.Category;
 import com.footballgg.server.domain.post.Post;
 import com.footballgg.server.domain.user.User;
 import com.footballgg.server.dto.post.PostResponse;
 import com.footballgg.server.dto.post.SavePostRequest;
 import com.footballgg.server.dto.post.UpdatePostRequest;
+import com.footballgg.server.service.comment.CommentService;
 import com.footballgg.server.service.favorite.FavoriteService;
 import com.footballgg.server.service.file.FileService;
 import com.footballgg.server.service.post.PostReadService;
@@ -15,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +37,7 @@ public class PostController {
     private final PostReadService postReadService;
     private final FileService fileService;
     private final FavoriteService favoriteService;
+    private final CommentService commentService;
 
     /** 게시글 작성 뷰*/
     @GetMapping("/create")
@@ -61,10 +65,18 @@ public class PostController {
     @GetMapping("/detail/{postId}")
     public String detail(@AuthenticationPrincipal User user,@PathVariable Long postId, Model model){
         PostResponse post = postReadService.getPostById(postId);
+        Pageable pageable = PageRequest.of(0,10);
+        Page<Comment> comments =  commentService.getComments(pageable,post.getPostId());
         model.addAttribute("isWriter", user == null ? false : post.getUserId() == user.getUserId());
         model.addAttribute("post",post);
         model.addAttribute("category",post.getCategory());
         model.addAttribute("isLike",favoriteService.isFavorite(user,post.getPostId()));
+        model.addAttribute("comments",comments);
+        model.addAttribute("endCommentPage",comments.getTotalPages()-1);
+        model.addAttribute("startComment",comments.getNumber()-5);
+        model.addAttribute("endComment",comments.getNumber()+5);
+        model.addAttribute("userId",user == null ? -1 : user.getUserId());
+        model.addAttribute("postId",postId);
         return "post/detail";
     }
 
@@ -77,7 +89,6 @@ public class PostController {
         model.addAttribute("endPage",postList.getTotalPages()-1);
         model.addAttribute("start",postList.getNumber()-5);
         model.addAttribute("end",postList.getNumber()+5);
-
         return "post/list";
     }
 

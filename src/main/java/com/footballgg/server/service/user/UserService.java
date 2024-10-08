@@ -67,7 +67,7 @@ public class UserService {
         Cookie accessCookie = new Cookie("Authorization", accessToken);
         accessCookie.setMaxAge(60 * 60); // 1시간 동안 유효
         accessCookie.setPath("/");
-        accessCookie.setDomain("footballgg.shop");
+        //accessCookie.setDomain("footballgg.shop");
         accessCookie.setSecure(false);
 
         response.addCookie(accessCookie);

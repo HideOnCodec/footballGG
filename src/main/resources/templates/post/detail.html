@@ -63,5 +63,41 @@
         </form>
         <button type="button" class="btn btn-outline-secondary" th:onclick="|location.href='@{/post/list/category}'|"><i class="bi bi-list-task"></i>목록</button>
     </div>
+
+    <div id="comment-list" th:insert="fragments/comment :: commentList"></div> <!-- 여기에 댓글 목록이 렌더링됩니다 -->
+
+    <!-- 페이징처리 시작 -->
+    <div th:if="${!comments.isEmpty()}"><!--postList.isEmpty:페이지존재여부(게시물있으면 false,없으면 true)-->
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${!comments.hasPrevious} ? 'disabled'">
+                <!-- !postList.hasPrevious - disabled : 이전페이지가 없으면 비활성화-->
+
+                <a class="page-link" th:href="@{|/comment/list/${post.postId}(page=${comments.number - 1})|}">
+                <!--이전페이지 링크-->
+                    <span>이전</span>
+                </a>
+            </li>
+
+            <!--th:each :페이지 리스트 루프--> <!--#numbers.sequence(시작, 끝)-->
+            <li th:each="page: ${#numbers.sequence(1,endCommentPage+1)}"
+
+                th:if="${page >= startComment and page <= endComment}"
+
+                th:classappend="${page == comments.number} ? 'active'"  class="page-item">
+                <!--page == postList.number : 현재페이지와 같으면 active 적용-->
+
+                <a th:text="${page}" class="page-link" th:href="@{|/comment/list/${post.postId}(page=${page})}"></a>
+            </li>
+            <li class="page-item" th:classappend="${!comments.hasNext} ? 'disabled'">
+                <!-- !postList.hasNext - disabled : 다음페이지 없으면 비활성화-->
+
+                <a class="page-link" th:href="@{|/comment/list/${post.postId}(page=${comments.number + 1})|}">
+                    <!--다음페이지 링크-->
+                    <span>다음</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- 페이징처리 끝 -->
 </div>
 </html>

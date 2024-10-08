@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <title>Title</title>
+</head>
+<body>
+  <div th:fragment="commentList">
+    <!-- 댓글 목록 Fragment 추가 -->
+    <div id="comment-input-box" class="input-group mb-3">
+      <input type="text" class="form-control" id="commentContent" placeholder="댓글을 입력하세요">
+      <button class="btn btn-primary" type="button" onclick="addComment()">댓글 추가</button>
+    </div>
+    <ul id="commentList" class="list-group mb-4">
+        <li class="list-group-item" th:each="comment : ${comments}">
+            <div class="comment-info-box">
+                <span th:text="${comment.content}">댓글 내용</span>
+                <div class="comment-info">
+                    <span th:text="|${comment.user.nickname}|">닉네임</span>
+                    <span th:text="|${#temporals.format(comment.createDate,'yyyy-MM-dd')}|">생성일</span>
+                    <button type="button"
+                            class="comment-btn"
+                            onclick="deleteComment(this)"
+                            th:data-comment-id="${comment.commentId}"
+                            th:if="${userId==comment.user.userId}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </li>
+    </ul>
+      <script th:inline="javascript">
+          function addComment() {
+              const commentContent = document.getElementById("commentContent").value;
+              const postId = /*[[${postId}]]*/ 0;
+
+              if (commentContent.trim() === "") {
+                  alert("댓글을 입력하세요.");
+                  return;
+              }
+
+              // 댓글 추가 AJAX 요청
+              fetch(`/comment`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ content: commentContent, postId: postId }) // 댓글 내용과 포스트 ID를 전송
+              })
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error('댓글 추가 실패');
+                      }
+                      else{
+                          // 댓글 목록을 조회하여 갱신
+                          loadComments('last', postId);
+                          document.getElementById("commentContent").value = ""; // 입력 필드 초기화
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+          }
+
+          function deleteComment(button){
+              const postId = /*[[${postId}]]*/ 0;
+              const commentId = button.getAttribute('data-comment-id');
+              // 댓글 삭제 AJAX 요청
+              fetch(`/comment/${commentId}`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  }
+              })
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error('댓글 삭제 실패');
+                      }
+                      else{
+                          // 댓글 목록을 조회하여 갱신
+                          loadComments('last', postId);
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+
+          }
+
+          function loadComments(type, postId) {
+              // 댓글 조회 AJAX 요청
+              $.ajax({
+                  url: `/comment/list/${postId}?type=${type}`,
+                  method: 'GET',
+                  success: function(data) {
+                      // 댓글 목록을 갱신
+                      console.log('data',data);
+                      document.getElementById("comment-list").innerHTML = data; // 댓글 목록 업데이트
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                      console.error('Error:', errorThrown);
+                  }
+              });
+          }
+      </script>
+  </div>
+</body>
+</html>

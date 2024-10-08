@@ -2,6 +2,7 @@ package com.footballgg.server.domain.post;
 
 
 import com.footballgg.server.base.basetime.BaseTimeEntity;
+import com.footballgg.server.domain.comment.Comment;
 import com.footballgg.server.domain.favorite.Favorite;
 import com.footballgg.server.domain.file.FileMapping;
 import com.footballgg.server.domain.user.User;
@@ -47,6 +48,10 @@ public class Post extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<FileMapping> fileMappingList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> commentList = new ArrayList<>();
 
     @ElementCollection
     private List<String> imgUrl;

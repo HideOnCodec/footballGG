@@ -47,6 +47,8 @@
         document.getElementById("codeSendBtn").addEventListener("click", sendCode);
         function sendCode() {
             let email = $('#email').val();
+            // 버튼 비활성화
+            $('#codeSendBtn').attr("disabled", true);
             if (email.length !== 0) {
                 $.ajax({
                     type: 'GET',
@@ -57,9 +59,11 @@
                 }).done(function (result) {
                     $("#email-auth").replaceWith(result);
                 })
-                    .fail(function (jqXHR) {
-                        console.log(jqXHR);
-                    });
+                .fail(function (jqXHR) {
+                    console.log(jqXHR);
+                    // 버튼 활성화
+                    $('#codeSendBtn').attr("disabled", false);
+                });
             }
             else{
                 console.log("fieldError : 이메일 값이 없음");
