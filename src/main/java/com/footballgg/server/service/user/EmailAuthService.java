@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -70,6 +71,7 @@ public class EmailAuthService {
     }
 
     //메일 전송
+    @Async
     public void sendEmail(String email) throws MessagingException, UnsupportedEncodingException {
 
         //메일전송에 필요한 정보 설정
