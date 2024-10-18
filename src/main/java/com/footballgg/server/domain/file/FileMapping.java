@@ -1,5 +1,6 @@
 package com.footballgg.server.domain.file;
 
+import com.footballgg.server.base.basetime.BaseTimeEntity;
 import com.footballgg.server.domain.post.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Getter
-public class FileMapping {
+public class FileMapping extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_id")

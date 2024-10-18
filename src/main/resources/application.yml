@@ -41,7 +41,9 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
-
+  batch:
+    jdbc:
+      initialize-schema: always
 # jwt
 jwt:
   secret-key: ${JWT_SECRET_KEY}
@@ -82,4 +84,5 @@ management:
 logging:
   level:
     com.footballgg.server: debug
+
 
