@@ -13,12 +13,23 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
     @Override
-    @Bean
+    @Bean(name = "asyncExecutor")
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(5);
         executor.setQueueCapacity(10);
+        executor.setThreadNamePrefix("Async BatchExecutor-");
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "mailExecutor")
+    public Executor getAsyncMailExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(20);
         executor.setThreadNamePrefix("Async MailExecutor-");
         executor.initialize();
         return executor;

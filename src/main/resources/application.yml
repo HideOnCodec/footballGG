@@ -27,12 +27,6 @@ spring:
           timeout: 5000
           starttls:
             enable: true
-  task:
-    scheduling:
-      pool:
-        size: 2
-      thread-name-prefix: footballgg-scheduler
-
   data:
     redis:
       host: ${REDIS_HOST}

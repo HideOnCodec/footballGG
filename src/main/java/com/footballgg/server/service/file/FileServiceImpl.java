@@ -1,6 +1,8 @@
 package com.footballgg.server.service.file;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.footballgg.server.domain.file.FileMapping;
 import com.footballgg.server.domain.post.Post;
@@ -30,6 +32,8 @@ public class FileServiceImpl implements FileService{
     // 버켓 이름 동적 할당(properties에서 가져옴)
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    @Value("${cloud.aws.region.static}")
+    private String region;
     private final AmazonS3 amazonS3;
     private final FileMappingRepository fileMappingRepository;
     private final PostRepository postRepository;
@@ -61,6 +65,24 @@ public class FileServiceImpl implements FileService{
     public void fileDelete(String fileName) {
         log.info(fileName);
         amazonS3.deleteObject(bucket, fileName);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMultiFile(List<String> imgUrlList) {
+        try {
+            String bucketUrl = "https://s3."+region+".amazonaws.com/"+bucket;
+            fileMappingRepository.deleteAllByFileUrlIn(imgUrlList);
+            for (String fileUrl : imgUrlList) {
+                log.info("delete imgUrl = {}",fileUrl);
+                String fileName = fileUrl.substring(bucketUrl.length() + 1);
+                DeleteObjectRequest request = new DeleteObjectRequest(bucket, fileName);
+                amazonS3.deleteObject(request);
+            }
+        }
+        catch (AmazonS3Exception e) {
+            throw new AmazonS3Exception("Failed to delete multiple files", e);
+        }
     }
 
     @Transactional

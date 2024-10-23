@@ -18,7 +18,7 @@ public class DeleteImgScheduler {
     private final JobLauncher jobLauncher;
     private final Job job;
 
-    @Async
+    @Async(value = "asyncExecutor")
     @Scheduled(cron = "0 0 0 */2 * *")
     public void runDeleteImgJob()
             throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {

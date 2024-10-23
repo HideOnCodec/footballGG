@@ -14,4 +14,5 @@ public interface FileMappingRepository extends JpaRepository<FileMapping,Long> {
     Optional<FileMapping> findByFileUrl(String fileUrl);
     List<FileMapping> findAllByPost(Post post);
     List<FileMapping> findAllByPostAndCreateDateBefore(Post post, LocalDateTime createDate);
+    void deleteAllByFileUrlIn(List<String> fileUrls);
 }

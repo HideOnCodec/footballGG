@@ -13,7 +13,7 @@ public class SchedulerConfiguration implements SchedulingConfigurer {
 
         threadPoolTaskScheduler.setPoolSize(2);
         threadPoolTaskScheduler.setThreadGroupName("footballgg-scheduler thread-pool");
-        threadPoolTaskScheduler.setThreadNamePrefix("footballgg-scheduler");
+        threadPoolTaskScheduler.setThreadNamePrefix("footballgg-scheduler-thread-");
         threadPoolTaskScheduler.initialize();
 
         taskRegistrar.setTaskScheduler(threadPoolTaskScheduler);
