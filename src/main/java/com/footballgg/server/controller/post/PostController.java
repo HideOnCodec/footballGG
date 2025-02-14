@@ -51,7 +51,7 @@ public class PostController {
     @PostMapping("/create")
     public String create(@Valid SavePostRequest savePostRequest, @AuthenticationPrincipal User user, RedirectAttributes redirectAttributes){
         PostResponse post = postService.savePost(savePostRequest,user);
-        log.info("create : user={}, post={}",user.getUserId(),post.getUserId());
+        log.info("게시글 생성 user={}, post={}",user.getUserId(),post.getUserId());
         List<String> imgUrl = postService.extractImageUrl(post.getContent());
 
         if(!imgUrl.isEmpty())
