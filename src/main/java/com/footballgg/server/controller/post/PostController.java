@@ -114,8 +114,6 @@ public class PostController {
         model.addAttribute("updatePostRequest",updatePostRequest);
         model.addAttribute("post",post);
         model.addAttribute("category",post.getCategory());
-
-        log.info("post = {}",post.getTitle());
         return "post/update";
     }
 
